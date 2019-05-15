@@ -9,6 +9,7 @@ import (
 
 type Response struct {
 	APIVersion string `json:"apiVersion"`
+	ID string `json:"id,omitempty"`
 	Data map[string]interface{} `json:"data,omitempty"`
 	Error map[string]interface{} `json:"error,omitempty"`
 }
@@ -16,6 +17,7 @@ type Response struct {
 type ResponseInterceptor struct {
 	responseProperties ResponseProperties
 	writer             http.ResponseWriter
+	request *http.Request
 }
 
 func (interceptor ResponseInterceptor) Header() http.Header {
@@ -25,9 +27,17 @@ func (interceptor ResponseInterceptor) Header() http.Header {
 func (interceptor ResponseInterceptor) Write(b []byte) (int, error) {
 	responseProperties := interceptor.responseProperties
 	bytesWritten := 0
+
+	ctx := interceptor.request.Context()
+
+	requestID, ok := ctx.Value("id").(string); if !ok {
+		requestID = ""
+	}
+
 	err := func() error {
 		response := &Response{
 			APIVersion: responseProperties.APIVersion,
+			ID: requestID,
 		}
 		err := json.Unmarshal(b, &response)
 		if err != nil {
