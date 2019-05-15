@@ -1,0 +1,9 @@
+#!/bin/sh
+
+STATUS="$(echo $(git status -s swagger.json) | head -c 1)"
+
+if [ STATUS == 'A']
+then
+  swagger generate spec -o swagger.json
+  git add swagger.json
+fi
