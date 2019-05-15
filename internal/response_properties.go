@@ -5,7 +5,7 @@ import (
 )
 
 type ResponseProperties struct {
-	APIVersion string `json:"apiVersion"`
+	APIVersion string
 }
 
 func (responseProperties ResponseProperties) Handler(handler func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {

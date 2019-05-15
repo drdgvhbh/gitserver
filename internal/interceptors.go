@@ -7,6 +7,12 @@ import (
 	"net/http"
 )
 
+type Response struct {
+	APIVersion string `json:"apiVersion"`
+	Data map[string]interface{} `json:"data,omitempty"`
+	Error map[string]interface{} `json:"error,omitempty"`
+}
+
 type ResponseInterceptor struct {
 	responseProperties ResponseProperties
 	writer             http.ResponseWriter
@@ -20,16 +26,16 @@ func (interceptor ResponseInterceptor) Write(b []byte) (int, error) {
 	responseProperties := interceptor.responseProperties
 	bytesWritten := 0
 	err := func() error {
-		var data ResponsePayload
-		err := json.Unmarshal(b, &data)
+		response := &Response{
+			APIVersion: responseProperties.APIVersion,
+		}
+		err := json.Unmarshal(b, &response)
 		if err != nil {
 			return err
 		}
 
-		interceptedData := &responseProperties
-
 		responseBytes := new(bytes.Buffer)
-		err = json.NewEncoder(responseBytes).Encode(interceptedData)
+		err = json.NewEncoder(responseBytes).Encode(response)
 		if err != nil {
 			return err
 		}
