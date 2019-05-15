@@ -17,6 +17,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.Use(internal.ContentTypeMiddleware)
+	router.Use(internal.RequestContextMiddleware)
 	apiVersionRouter := router.PathPrefix("/v1").Subrouter()
 
 	repositoriesRouter := apiVersionRouter.PathPrefix("/repositories/{directory}").Subrouter()
