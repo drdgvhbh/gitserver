@@ -9,11 +9,13 @@ import (
 	"gopkg.in/src-d/go-git.v4"
 )
 
+// ResponsePayload is the payload for every response
 type ResponsePayload struct {
 	Data  map[string]interface{} `json:"data"`
 	Error map[string]interface{} `json:"error"`
 }
 
+// CommitsHandler returns the git commits in the specified repository
 func CommitsHandler(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	repositoryPath := vars["directory"]

@@ -15,6 +15,7 @@ import (
 
 var versionPrefixRegex = regexp.MustCompile("/v[0-9]+/")
 
+// ContentTypeMiddleware injects application/json as the content type
 func ContentTypeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Add("Content-Type", "application/json")
@@ -22,6 +23,7 @@ func ContentTypeMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// RequestMethodContextMiddleware injects the http route, along with its http method in the response
 func RequestMethodContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 
@@ -39,6 +41,7 @@ func RequestMethodContextMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// RequestIDContextMiddleware injects a UUID as the request ID in the response
 func RequestIDContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := context.WithValue(request.Context(), "id", uuid.New().String())
@@ -47,6 +50,7 @@ func RequestIDContextMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// NewResponseWriterMiddleware creates a middleware that intercepts another http.ResponseWriter
 func NewResponseWriterMiddleware(newResponseWriter NewResponseWriter) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(
@@ -58,6 +62,9 @@ func NewResponseWriterMiddleware(newResponseWriter NewResponseWriter) mux.Middle
 	}
 }
 
+// OpenRepositoryMiddleware attempts to open a git repository to see if it exists,
+// before passing it down the chain. If there is an error opening the repository,
+// it will redirect the flow of control to the error handler
 func OpenRepositoryMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		vars := mux.Vars(request)
