@@ -50,8 +50,7 @@ func (interceptor ResponseInterceptor) Write(b []byte) (int, error) {
 			return err
 		}
 
-		spew.Sdump(responseBytes.Bytes())
-		bytesWritten, err = interceptor.writer.Write(responseBytes.Bytes())
+		bytesWritten, err = interceptor.Writer.Write(responseBytes.Bytes())
 
 		return err
 	}()
