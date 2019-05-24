@@ -3,41 +3,53 @@ package internal
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/davecgh/go-spew/spew"
 	"net/http"
 )
 
+type NewResponseWriter func(http.ResponseWriter, *http.Request) http.ResponseWriter
+
 type Response struct {
-	APIVersion string `json:"apiVersion"`
-	ID string `json:"id,omitempty"`
-	Data map[string]interface{} `json:"data,omitempty"`
-	Error map[string]interface{} `json:"error,omitempty"`
+	APIVersion string                 `json:"apiVersion"`
+	ID         string                 `json:"id,omitempty"`
+	Method     string                 `json:"method,omitempty"`
+	Data       map[string]interface{} `json:"data,omitempty"`
+	Error      map[string]interface{} `json:"error,omitempty"`
+}
+
+type ResponseProperties struct {
+	APIVersion string
 }
 
 type ResponseInterceptor struct {
-	responseProperties ResponseProperties
-	writer             http.ResponseWriter
-	request *http.Request
+	ResponseProperties ResponseProperties
+	Writer             http.ResponseWriter
+	Request            *http.Request
 }
 
 func (interceptor ResponseInterceptor) Header() http.Header {
-	return interceptor.writer.Header()
+	return interceptor.Writer.Header()
 }
 
 func (interceptor ResponseInterceptor) Write(b []byte) (int, error) {
-	responseProperties := interceptor.responseProperties
+	responseProperties := interceptor.ResponseProperties
 	bytesWritten := 0
 
-	ctx := interceptor.request.Context()
+	ctx := interceptor.Request.Context()
 
-	requestID, ok := ctx.Value("id").(string); if !ok {
+	requestID, ok := ctx.Value("id").(string)
+	if !ok {
+		requestID = ""
+	}
+	method, ok := ctx.Value("method").(string)
+	if !ok {
 		requestID = ""
 	}
 
 	err := func() error {
 		response := &Response{
 			APIVersion: responseProperties.APIVersion,
-			ID: requestID,
+			ID:         requestID,
+			Method:     method,
 		}
 		err := json.Unmarshal(b, &response)
 		if err != nil {
