@@ -1,7 +1,7 @@
 start:
 	go run ./cmd/main.go
 
-test:
+test-unit:
 	go test ./internal/...
 
 test-e2e:
