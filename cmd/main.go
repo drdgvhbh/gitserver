@@ -7,45 +7,15 @@ import (
 	"time"
 
 	"github.com/drdgvhbh/gitserver/internal"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"gopkg.in/src-d/go-billy.v4/osfs"
 )
 
-var responseProperties = &internal.ResponseProperties{
-	APIVersion: "0.0.1",
-}
-
-func newResponseWriter(
-	writer http.ResponseWriter,
-	request *http.Request,
-) http.ResponseWriter {
-	return &internal.ResponseInterceptor{
-		ResponseProperties: *responseProperties,
-		Writer:             writer,
-		Request:            request,
-	}
-}
-
 func main() {
-
-	router := mux.NewRouter()
-	router.Use(internal.ContentTypeMiddleware)
-	router.Use(internal.RequestIDContextMiddleware)
-	router.Use(internal.RequestMethodContextMiddleware)
-	apiVersionRouter := router.PathPrefix("/v1").Subrouter()
-	apiVersionRouter.Use(internal.NewResponseWriterMiddleware(newResponseWriter))
-
-	repositoriesRouter := apiVersionRouter.
-		PathPrefix("/repositories/{directory}").
-		Subrouter()
-	repositoriesRouter.Use(internal.OpenRepositoryMiddleware)
-
-	repositoriesRouter.
-		HandleFunc("/commits", internal.CommitsHandler).
-		Methods("GET")
+	fs := osfs.New("")
+	rootHandler := internal.NewRootHandler(fs)
 
 	server := &http.Server{
-		Handler:      handlers.RecoveryHandler()(router),
+		Handler:      rootHandler,
 		Addr:         "127.0.0.1:8000",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

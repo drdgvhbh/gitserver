@@ -8,12 +8,14 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/drdgvhbh/gitserver/internal/git"
+
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"gopkg.in/src-d/go-git.v4"
 )
 
 var versionPrefixRegex = regexp.MustCompile("/v[0-9]+/")
+var repositoryDoesNotExistRegex = regexp.MustCompile("repository does not exist")
 
 // ContentTypeMiddleware injects application/json as the content type
 func ContentTypeMiddleware(next http.Handler) http.Handler {
@@ -62,29 +64,48 @@ func NewResponseWriterMiddleware(newResponseWriter NewResponseWriter) mux.Middle
 	}
 }
 
-// OpenRepositoryMiddleware attempts to open a git repository to see if it exists,
-// before passing it down the chain. If there is an error opening the repository,
-// it will redirect the flow of control to the error handler
-func OpenRepositoryMiddleware(next http.Handler) http.Handler {
+func RepositoryDirectoryVariableSanitizer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		vars := mux.Vars(request)
-		repositoryPath := vars["directory"]
-		repository, err := git.PlainOpen(repositoryPath)
-		if err != nil {
-			errorPayload := ResponsePayload{
-				Error: map[string]interface{}{
-					"error": err.Error(),
-				},
-			}
-			err = json.NewEncoder(writer).Encode(&errorPayload)
-			return
-		}
+		repositoryDirectory := vars["directory"]
 
-		ctx := context.WithValue(
-			request.Context(),
-			"repository",
-			repository)
+		mux.Vars(request)["directory"] = strings.ReplaceAll(repositoryDirectory, "|", "/")
 
-		next.ServeHTTP(writer, request.WithContext(ctx))
+		next.ServeHTTP(writer, request)
 	})
+}
+
+// NewOpenRepositoryMiddleware creates a middlware that attempts to open a
+// git repository to see if it exists, before passing it down the chain.
+// If there is an error opening the repository, it will redirect the flow of
+// control to the error handler
+func NewOpenRepositoryMiddleware(reader git.Reader) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			vars := mux.Vars(request)
+			repositoryPath := vars["directory"]
+			_, err := reader.Open(repositoryPath)
+			if err != nil {
+				var errorPayload *ResponsePayload
+				if repositoryDoesNotExistRegex.MatchString(err.Error()) {
+					errorPayload = &ResponsePayload{
+						Error: map[string]interface{}{
+							"error": err.Error(),
+						},
+					}
+					writer.WriteHeader(http.StatusNotFound)
+				} else {
+					panic(err) // TODO: Replace with a log statement or something more appropriate
+				}
+
+				err = json.NewEncoder(writer).Encode(&errorPayload)
+				if err != nil {
+					panic(err) // TODO: Replace with a log statement or something more appropriate
+				}
+				return
+			}
+
+			next.ServeHTTP(writer, request)
+		})
+	}
 }

@@ -14,8 +14,8 @@ type Response struct {
 	APIVersion string                 `json:"apiVersion"`
 	ID         string                 `json:"id,omitempty"`
 	Method     string                 `json:"method,omitempty"`
-	Data       map[string]interface{} `json:"data,omitempty"`
-	Error      map[string]interface{} `json:"error,omitempty"`
+	Data       []interface{}          `json:"data,omitempty"`
+	Errors     map[string]interface{} `json:"error,omitempty"`
 }
 
 // ResponseProperties are the predefined set of properties for each response
@@ -79,5 +79,5 @@ func (interceptor ResponseInterceptor) Write(b []byte) (int, error) {
 
 // WriteHeader writes a header to the original http.ResponseWriter
 func (interceptor ResponseInterceptor) WriteHeader(statusCode int) {
-	interceptor.WriteHeader(statusCode)
+	interceptor.Writer.WriteHeader(statusCode)
 }
