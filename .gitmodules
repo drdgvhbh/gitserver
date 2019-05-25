@@ -1,0 +1,3 @@
+[submodule "test/simple-git-repo"]
+	path = test/simple-git-repo
+	url = https://github.com/drdgvhbh/simple-git-repo.git
