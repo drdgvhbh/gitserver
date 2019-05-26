@@ -4,5 +4,14 @@ start:
 test-unit:
 	go test ./internal/...
 
+cover:
+	go test ./internal/... -coverprofile=coverage.out
+
+test-coverage:
+	go tool cover -html=coverage.out
+
+coveralls:
+	go test -v -covermode=count -coverprofile=coverage.out ./internal/...
+
 test-e2e:
 	go test ./test
