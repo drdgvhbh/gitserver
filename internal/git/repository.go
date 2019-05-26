@@ -20,10 +20,15 @@ type Reference interface {
 
 type Commit interface {
 	Summary() string
+	Hash() string
 }
 
 type GitCommit struct {
 	Wrapee *object.Commit
+}
+
+func (commit *GitCommit) Hash() string {
+	return commit.Wrapee.Hash.String()
 }
 
 func (commit *GitCommit) Summary() string {

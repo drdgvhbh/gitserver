@@ -18,6 +18,7 @@ type ResponsePayload struct {
 }
 
 type CommitLogData struct {
+	Hash    string `json:"hash,omitempty"`
 	Summary string `json:"summary,omitempty"`
 }
 
@@ -85,6 +86,7 @@ func NewCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Reques
 
 			err = commitHistory.ForEach(func(commit git.Commit) error {
 				commitLogData = append(commitLogData, CommitLogData{
+					Hash:    commit.Hash(),
 					Summary: commit.Summary(),
 				})
 				return nil
