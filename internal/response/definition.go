@@ -2,8 +2,8 @@ package response
 
 // Payload is the payload for every response
 type Payload struct {
-	Data  []interface{}          `json:"data"`
-	Error map[string]interface{} `json:"error"`
+	Data   []interface{}          `json:"data,omitempty"`
+	Errors map[string]interface{} `json:"errors,omitempty"`
 }
 
 // Properties are the predefined set of properties for each response
@@ -16,7 +16,6 @@ type Definition struct {
 	APIVersion string                 `json:"apiVersion"`
 	ID         string                 `json:"id,omitempty"`
 	Method     string                 `json:"method,omitempty"`
-	Data       []interface{}          `json:"data,omitempty"`
-	Errors     map[string]interface{} `json:"error,omitempty"`
+	Payload
 }
 

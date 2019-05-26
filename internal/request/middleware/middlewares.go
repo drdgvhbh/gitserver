@@ -92,7 +92,7 @@ func NewOpenRepository(reader git.Reader) mux.MiddlewareFunc {
 				var errorPayload *response.Payload
 				if repositoryDoesNotExistRegex.MatchString(err.Error()) {
 					errorPayload = &response.Payload{
-						Error: map[string]interface{}{
+						Errors: map[string]interface{}{
 							"error": err.Error(),
 						},
 					}
