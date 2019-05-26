@@ -10,8 +10,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type GetCommitsOKResponse struct {
+	response.Definition
+	Data []LogData
+}
+
 // CommitsHandler returns the git commit in the specified repository
-func NewCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
+func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		vars := mux.Vars(request)
 		repositoryPath := vars["directory"]
