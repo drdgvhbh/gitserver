@@ -20,8 +20,11 @@ type GetCommitsOKResponse struct {
 		//
 		// required: true
 		// example: repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.get
-		Method string    `json:"method,omitempty"`
-		Data   []LogData `json:"data,omitempty"`
+		Method string `json:"method,omitempty"`
+		// The response data
+		//
+		// required: true
+		Data []LogData `json:"data,omitempty"`
 	}
 }
 
