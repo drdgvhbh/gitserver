@@ -16,7 +16,7 @@ type GetCommitsOKResponse struct {
 	// in: body
 	Body struct {
 		response.Base
-		Data []LogData
+		Data []LogData `json:"data,omitempty"`
 	}
 }
 
