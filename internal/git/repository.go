@@ -45,6 +45,7 @@ type Commit interface {
 	Summary() string
 	Hash() string
 	Author() Signature
+	Committer() Signature
 }
 
 type GitCommit struct {
@@ -67,6 +68,10 @@ func (commit *GitCommit) Summary() string {
 
 func (commit *GitCommit) Author() Signature {
 	return &SignatureWrapper{commit.Wrapee.Author}
+}
+
+func (commit *GitCommit) Committer() Signature {
+	return &SignatureWrapper{commit.Wrapee.Committer}
 }
 
 type CommitIter interface {
