@@ -85,21 +85,27 @@ func (suite *ListCommitsInARepoTestSuite) TestDerp() {
 	suite.Assert().JSONEq(
 		`[
 			{
+				"hash": "625d85387d80a56a26a5c7ff28d84e49afef2635",
 				"summary": "This is me adding text to a file"
 			},
 			{
+				"hash": "22b86bcafbc105b45d62772546ef1d2b4bef74f1",
 				"summary": "this is me renaming a directory"
 			},
 			{
+				"hash": "a004980430dffe788c44d97584a2818c54bf6e54",
 				"summary": "this is me adding a file in a subdirectory"
 			},
 			{
+				"hash": "b322ecd55ffee1cdfd42a68f49f201129d9ef023",
 				"summary": "this is me deleting a file"
 			},
 			{
+				"hash": "9649993898da5b19e530a2750ac5fb6fea2d56f8",
 				"summary": "This is me adding three new files"
 			},
 			{
+				"hash": "a82386953aa55fe38dd79a3b65742e39298afc2f",
 				"summary": "This is the start of the repo"
 			}
 		]`,
