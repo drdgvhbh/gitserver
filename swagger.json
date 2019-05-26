@@ -26,7 +26,136 @@
   },
   "host": "localhost",
   "basePath": "/v1",
-  "paths": {},
+  "paths": {
+    "/repositories/{directory}/commit": {
+      "get": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "This will list the commit in the specified repository.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "List commits",
+        "operationId": "listCommits",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetCommitsOkResponse"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Contributor": {
+      "type": "object",
+      "required": [
+        "name",
+        "email",
+        "timestamp"
+      ],
+      "properties": {
+        "email": {
+          "description": "Contributor's email",
+          "type": "string",
+          "x-go-name": "Email",
+          "example": "ryanleecode@gmail.com"
+        },
+        "name": {
+          "description": "Contributor's Name",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "Ryan Lee"
+        },
+        "timestamp": {
+          "description": "Timestamp of contribution",
+          "type": "string",
+          "x-go-name": "Timestamp",
+          "example": "2019-05-26T12:41:18-04:00"
+        }
+      },
+      "x-go-package": "github.com/drdgvhbh/gitserver/internal/repository/commit"
+    },
+    "LogData": {
+      "type": "object",
+      "required": [
+        "hash",
+        "author",
+        "committer"
+      ],
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/Contributor"
+        },
+        "committer": {
+          "$ref": "#/definitions/Contributor"
+        },
+        "hash": {
+          "description": "The hash of the commit",
+          "type": "string",
+          "x-go-name": "Hash",
+          "example": "e38e2cde1fada4a738f2461b283e561bc767568b"
+        },
+        "summary": {
+          "description": "The summary of the commit",
+          "type": "string",
+          "x-go-name": "Summary",
+          "example": "Deletes swagger documentation from the repository"
+        }
+      },
+      "x-go-package": "github.com/drdgvhbh/gitserver/internal/repository/commit"
+    }
+  },
+  "responses": {
+    "GetCommitsOkResponse": {
+      "description": "List of commits in the repository",
+      "schema": {
+        "type": "object",
+        "required": [
+          "apiVersion",
+          "id",
+          "method",
+          "data"
+        ],
+        "properties": {
+          "apiVersion": {
+            "description": "The API version",
+            "type": "string",
+            "x-go-name": "APIVersion",
+            "example": "0.0.1"
+          },
+          "data": {
+            "description": "The response data",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/LogData"
+            },
+            "x-go-name": "Data"
+          },
+          "id": {
+            "description": "The request ID",
+            "type": "string",
+            "x-go-name": "ID",
+            "example": "dc380b72-41c9-47bf-8be5-f3a7a493f4ca"
+          },
+          "method": {
+            "description": "The request method",
+            "type": "string",
+            "x-go-name": "Method",
+            "example": "repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.get"
+          }
+        }
+      }
+    }
+  },
   "securityDefinitions": {
     "api_key": {
       "type": "apiKey",
