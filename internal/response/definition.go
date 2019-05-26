@@ -13,9 +13,20 @@ type Properties struct {
 
 // Base is the basic definition of every response
 type Base struct {
-	APIVersion string                 `json:"apiVersion"`
-	ID         string                 `json:"id,omitempty"`
-	Method     string                 `json:"method,omitempty"`
+	// The API version
+	//
+	// required: true
+	// example: 0.0.1
+	APIVersion string `json:"apiVersion"`
+	// The request ID
+	//
+	// required: true
+	// example: dc380b72-41c9-47bf-8be5-f3a7a493f4ca
+	ID string `json:"id,omitempty"`
+	// The request method
+	//
+	// required: true
+	Method string `json:"method,omitempty"`
 }
 
 // Definition is the structure of every http response
@@ -23,4 +34,3 @@ type Definition struct {
 	Base
 	Payload
 }
-
