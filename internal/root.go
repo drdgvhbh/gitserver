@@ -3,6 +3,8 @@ package internal
 import (
 	"net/http"
 
+	"github.com/drdgvhbh/gitserver/internal/repository"
+
 	request2 "github.com/drdgvhbh/gitserver/internal/request"
 	"github.com/drdgvhbh/gitserver/internal/request/middleware"
 
@@ -14,6 +16,8 @@ import (
 	"github.com/gorilla/mux"
 	"gopkg.in/src-d/go-billy.v4"
 )
+
+var _ = repository.Params{}
 
 var (
 	responseProperties = &response.Properties{
