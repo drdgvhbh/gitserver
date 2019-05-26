@@ -1,9 +1,10 @@
 package internal
 
 import (
+	"net/http"
+
 	request2 "github.com/drdgvhbh/gitserver/internal/request"
 	"github.com/drdgvhbh/gitserver/internal/request/middleware"
-	"net/http"
 
 	"github.com/drdgvhbh/gitserver/internal/repository/commit"
 	"github.com/drdgvhbh/gitserver/internal/response"
@@ -47,6 +48,24 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 	repositoriesRouter.Use(middleware.RepositoryDirectoryVariableSanitizer)
 	repositoriesRouter.Use(middleware.NewOpenRepository(fileSystem))
 
+	// swagger:route GET /repositories/{directory}/commit listCommits
+	//
+	// List commit
+	//
+	// This will list the commit in the specified repository.
+	//
+	//     	Consumes:
+	//     	- application/json
+	//
+	//			Produces:
+	//			- application/json
+	//
+	//			Schemes: http
+	//
+	//			Security:
+	//				api_key:
+	//			Responses:
+	//       	200: GetCommitsOkResponse
 	repositoriesRouter.
 		HandleFunc("/commits", commit.NewGetCommitsHandler(fileSystem)).
 		Methods("GET")
