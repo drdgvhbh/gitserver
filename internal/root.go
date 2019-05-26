@@ -5,7 +5,7 @@ import (
 	"github.com/drdgvhbh/gitserver/internal/request/middleware"
 	"net/http"
 
-	"github.com/drdgvhbh/gitserver/internal/commit"
+	"github.com/drdgvhbh/gitserver/internal/repository/commit"
 	"github.com/drdgvhbh/gitserver/internal/response"
 
 	"github.com/drdgvhbh/gitserver/internal/git"
@@ -13,15 +13,6 @@ import (
 	"github.com/gorilla/mux"
 	"gopkg.in/src-d/go-billy.v4"
 )
-
-// swagger:parameters listCommits
-type RepositoryParams struct {
-	// The directory of the repository
-	//
-	// in: path
-	// required: true
-	Directory string `json:"directory"`
-}
 
 var (
 	responseProperties = &response.Properties{
@@ -57,7 +48,7 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 	repositoriesRouter.Use(middleware.NewOpenRepository(fileSystem))
 
 	repositoriesRouter.
-		HandleFunc("/commits", commit.NewCommitsHandler(fileSystem)).
+		HandleFunc("/commits", commit.NewGetCommitsHandler(fileSystem)).
 		Methods("GET")
 
 	return handlers.RecoveryHandler()(router)
