@@ -46,6 +46,16 @@
         ],
         "summary": "List commits",
         "operationId": "listCommits",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Directory",
+            "description": "The directory of the repository",
+            "name": "directory",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/responses/GetCommitsOkResponse"
