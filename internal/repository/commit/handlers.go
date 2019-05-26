@@ -10,9 +10,22 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// List of commits in the repository
+// swagger:response GetCommitsOkResponse
 type GetCommitsOKResponse struct {
-	response.Definition
-	Data []LogData
+	// in: body
+	Body struct {
+		response.Base
+		// The request method
+		//
+		// required: true
+		// example: repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.get
+		Method string `json:"method,omitempty"`
+		// The response data
+		//
+		// required: true
+		Data []LogData `json:"data,omitempty"`
+	}
 }
 
 // CommitsHandler returns the git commit in the specified repository
