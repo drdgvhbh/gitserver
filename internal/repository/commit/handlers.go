@@ -11,7 +11,7 @@ import (
 )
 
 type GetCommitsOKResponse struct {
-	response.Definition
+	response.Base
 	Data []LogData
 }
 
