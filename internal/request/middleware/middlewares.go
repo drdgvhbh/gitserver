@@ -3,11 +3,13 @@ package middleware
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/drdgvhbh/gitserver/internal/request"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/drdgvhbh/gitserver/internal/request"
 
 	"github.com/drdgvhbh/gitserver/internal/response"
 
@@ -19,6 +21,40 @@ import (
 
 var versionPrefixRegex = regexp.MustCompile("/v[0-9]+/")
 var repositoryDoesNotExistRegex = regexp.MustCompile("repository does not exist")
+
+func NewAuthMiddleware(apiKey string) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			err := (func() error {
+				authorization := request.Header.Get("Authorization")
+
+				authorizationRegexp, err := regexp.Compile(
+					fmt.Sprintf("^%s$", apiKey))
+				if err != nil {
+					return err
+				}
+
+				if authorizationRegexp.MatchString(authorization) {
+					return nil
+				}
+
+				return errors.New("Unauthorized")
+			})()
+
+			if err != nil {
+				errorPayload := &response.Payload{
+					Errors: map[string]interface{}{
+						"error": "Unauthorized",
+					},
+				}
+				writer.WriteHeader(http.StatusUnauthorized)
+				_ = json.NewEncoder(writer).Encode(&errorPayload)
+			} else {
+				next.ServeHTTP(writer, request)
+			}
+		})
+	}
+}
 
 // ContentType injects application/json as the content type
 func ContentType(next http.Handler) http.Handler {

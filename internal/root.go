@@ -41,6 +41,7 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 	router.Use(middleware.MethodContext)
 	apiVersionRouter := router.PathPrefix("/v1").Subrouter()
 	apiVersionRouter.Use(middleware.NewResponseWriter(newResponseWriter))
+	apiVersionRouter.Use(middleware.NewAuthMiddleware("e8b8dc29-d1d9-495d-b509-4dde3701018b"))
 
 	repositoriesRouter := apiVersionRouter.
 		PathPrefix("/repositories/{directory}").

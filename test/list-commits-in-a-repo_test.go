@@ -71,7 +71,11 @@ func (suite *ListCommitsInARepoTestSuite) TestDerp() {
 		fmt.Sprintf("%s/v1/repositories/%s/commits", testServer.URL, repoPath))
 	suite.NoError(err)
 
-	resp, err := http.Get(reqURL.String())
+	req, err := http.NewRequest("GET", reqURL.String(), nil)
+	suite.NoError(err)
+	req.Header.Add("Authorization", "e8b8dc29-d1d9-495d-b509-4dde3701018b")
+
+	resp, err := testServer.Client().Do(req)
 	suite.NoError(err)
 
 	body, err := ioutil.ReadAll(resp.Body)
