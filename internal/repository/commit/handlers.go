@@ -69,7 +69,7 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 
 		if err != nil {
 			errorPayload := response.Payload{
-				Error: map[string]interface{}{
+				Errors: map[string]interface{}{
 					"error": err,
 				},
 			}

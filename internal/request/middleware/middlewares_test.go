@@ -3,12 +3,13 @@ package middleware_test
 import (
 	"errors"
 	"fmt"
-	"github.com/drdgvhbh/gitserver/internal/request/middleware"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
 	"testing"
+
+	"github.com/drdgvhbh/gitserver/internal/request/middleware"
 
 	"github.com/drdgvhbh/gitserver/internal/mock"
 
@@ -177,7 +178,7 @@ func (suite *NewOpenRepositoryMiddlewareTestSuite) TestReportsRepositoryNotFound
 	suite.Assert().Equal(http.StatusNotFound, resp.StatusCode)
 
 	suite.Assert().JSONEq(
-		`{ "data": null, "error": { "error": "repository does not exist" }}`,
+		`{ "errors": { "error": "repository does not exist" }}`,
 		string(body))
 
 	reader.AssertExpectations(suite.T())
