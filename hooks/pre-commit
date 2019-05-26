@@ -2,8 +2,10 @@
 
 STATUS="$(echo $(git status -s swagger.json) | head -c 1)"
 
-if [ STATUS == 'A']
+echo "pre-commit started"
+if [ $STATUS = "A" ] || [ $STATUS = "M" ]
 then
-  swagger generate spec -o swagger.json
+  swagger generate spec -b ./cmd -o swagger.json
   git add swagger.json
 fi
+echo "pre-commit finished"
