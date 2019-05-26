@@ -3,6 +3,7 @@ package git_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/drdgvhbh/gitserver/internal/git"
 	"github.com/stretchr/testify/assert"
@@ -39,4 +40,50 @@ func TestCommitHash(t *testing.T) {
 	}
 
 	assert.EqualValues(hash, commit.Hash())
+}
+
+func TestSignatureWrapperName(t *testing.T) {
+	assert := assert.New(t)
+
+	name := "Ryan Lee"
+	depSignature := object.Signature{
+		Name: name,
+	}
+
+	signature := git.SignatureWrapper{
+		Wrapee: depSignature,
+	}
+
+	assert.EqualValues(name, signature.Name())
+}
+
+func TestSignatureWrapperEmail(t *testing.T) {
+	assert := assert.New(t)
+
+	email := "drdgvhbh@gmail.com"
+	depEmail := object.Signature{
+		Email: email,
+	}
+
+	signature := git.SignatureWrapper{
+		Wrapee: depEmail,
+	}
+
+	assert.EqualValues(email, signature.Email())
+}
+
+func TestSignatureWrapperTimestamp(t *testing.T) {
+	assert := assert.New(t)
+
+	timestamp, err := time.Parse(time.RFC3339, "2019-05-25T15:18:47-04:00")
+	assert.NoError(err)
+	depTimestamp := object.Signature{
+		When: timestamp,
+	}
+
+	signature := git.SignatureWrapper{
+		Wrapee: depTimestamp,
+	}
+
+	assert.EqualValues(timestamp, signature.Timestamp())
 }

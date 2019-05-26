@@ -2,6 +2,7 @@ package git
 
 import (
 	"strings"
+	"time"
 
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
@@ -9,6 +10,28 @@ import (
 )
 
 type Hash [20]byte
+
+type Signature interface {
+	Name() string
+	Email() string
+	Timestamp() time.Time
+}
+
+type SignatureWrapper struct {
+	Wrapee object.Signature
+}
+
+func (s SignatureWrapper) Name() string {
+	return s.Wrapee.Name
+}
+
+func (s SignatureWrapper) Email() string {
+	return s.Wrapee.Email
+}
+
+func (s SignatureWrapper) Timestamp() time.Time {
+	return s.Wrapee.When
+}
 
 type LogOptions struct {
 	From Hash
@@ -21,6 +44,7 @@ type Reference interface {
 type Commit interface {
 	Summary() string
 	Hash() string
+	Author() Signature
 }
 
 type GitCommit struct {
@@ -39,6 +63,10 @@ func (commit *GitCommit) Summary() string {
 	}
 
 	return message[0]
+}
+
+func (commit *GitCommit) Author() Signature {
+	return &SignatureWrapper{commit.Wrapee.Author}
 }
 
 type CommitIter interface {

@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/drdgvhbh/gitserver/internal/git"
 	"github.com/gorilla/handlers"
@@ -17,9 +18,16 @@ type ResponsePayload struct {
 	Error map[string]interface{} `json:"error"`
 }
 
+type CommitContributor struct {
+	Name      string `json:"name,omitempty"`
+	Email     string `json:"email,omitempty"`
+	Timestamp string `json:"timestamp,omitempty"`
+}
+
 type CommitLogData struct {
-	Hash    string `json:"hash,omitempty"`
-	Summary string `json:"summary,omitempty"`
+	Hash    string             `json:"hash,omitempty"`
+	Summary string             `json:"summary,omitempty"`
+	Author  *CommitContributor `json:"author,omitempty"`
 }
 
 var (
@@ -88,6 +96,11 @@ func NewCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Reques
 				commitLogData = append(commitLogData, CommitLogData{
 					Hash:    commit.Hash(),
 					Summary: commit.Summary(),
+					Author: &CommitContributor{
+						Name:      commit.Author().Name(),
+						Email:     commit.Author().Email(),
+						Timestamp: commit.Author().Timestamp().Format(time.RFC3339),
+					},
 				})
 				return nil
 			})
