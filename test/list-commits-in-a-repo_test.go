@@ -12,6 +12,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/drdgvhbh/gitserver/internal/response"
+
 	"gopkg.in/src-d/go-git.v4/plumbing/cache"
 	"gopkg.in/src-d/go-git.v4/storage/filesystem"
 
@@ -75,7 +77,7 @@ func (suite *ListCommitsInARepoTestSuite) TestDerp() {
 	body, err := ioutil.ReadAll(resp.Body)
 	suite.NoError(err)
 
-	var responseBody *internal.Response
+	var responseBody *response.Definition
 	err = json.Unmarshal(body, &responseBody)
 	suite.NoError(err)
 

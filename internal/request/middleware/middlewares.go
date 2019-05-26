@@ -1,12 +1,15 @@
-package internal
+package middleware
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/drdgvhbh/gitserver/internal/request"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/drdgvhbh/gitserver/internal/response"
 
 	"github.com/drdgvhbh/gitserver/internal/git"
 
@@ -17,16 +20,16 @@ import (
 var versionPrefixRegex = regexp.MustCompile("/v[0-9]+/")
 var repositoryDoesNotExistRegex = regexp.MustCompile("repository does not exist")
 
-// ContentTypeMiddleware injects application/json as the content type
-func ContentTypeMiddleware(next http.Handler) http.Handler {
+// ContentType injects application/json as the content type
+func ContentType(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Add("Content-Type", "application/json")
 		next.ServeHTTP(writer, request)
 	})
 }
 
-// RequestMethodContextMiddleware injects the http route, along with its http method in the response
-func RequestMethodContextMiddleware(next http.Handler) http.Handler {
+// MethodContext injects the http route, along with its http method in the response
+func MethodContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 
 		ctx := context.WithValue(
@@ -43,8 +46,8 @@ func RequestMethodContextMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// RequestIDContextMiddleware injects a UUID as the request ID in the response
-func RequestIDContextMiddleware(next http.Handler) http.Handler {
+// IDContext injects a UUID as the request ID in the response
+func IDContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := context.WithValue(request.Context(), "id", uuid.New().String())
 
@@ -52,8 +55,8 @@ func RequestIDContextMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// NewResponseWriterMiddleware creates a middleware that intercepts another http.ResponseWriter
-func NewResponseWriterMiddleware(newResponseWriter NewResponseWriter) mux.MiddlewareFunc {
+// NewResponseWriter creates a middleware that intercepts another http.ResponseWriter
+func NewResponseWriter(newResponseWriter request.NewResponseWriter) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(
 			func(writer http.ResponseWriter, request *http.Request) {
@@ -75,20 +78,20 @@ func RepositoryDirectoryVariableSanitizer(next http.Handler) http.Handler {
 	})
 }
 
-// NewOpenRepositoryMiddleware creates a middlware that attempts to open a
+// NewOpenRepository creates a middleware that attempts to open a
 // git repository to see if it exists, before passing it down the chain.
 // If there is an error opening the repository, it will redirect the flow of
 // control to the error handler
-func NewOpenRepositoryMiddleware(reader git.Reader) mux.MiddlewareFunc {
+func NewOpenRepository(reader git.Reader) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			vars := mux.Vars(request)
 			repositoryPath := vars["directory"]
 			_, err := reader.Open(repositoryPath)
 			if err != nil {
-				var errorPayload *ResponsePayload
+				var errorPayload *response.Payload
 				if repositoryDoesNotExistRegex.MatchString(err.Error()) {
-					errorPayload = &ResponsePayload{
+					errorPayload = &response.Payload{
 						Error: map[string]interface{}{
 							"error": err.Error(),
 						},

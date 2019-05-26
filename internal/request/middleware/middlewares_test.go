@@ -1,8 +1,9 @@
-package internal_test
+package middleware_test
 
 import (
 	"errors"
 	"fmt"
+	"github.com/drdgvhbh/gitserver/internal/request/middleware"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/drdgvhbh/gitserver/internal/mock"
 
-	"github.com/drdgvhbh/gitserver/internal"
 	"github.com/gorilla/mux"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +27,7 @@ func TestContentTypeMiddleware(t *testing.T) {
 
 	assert := assert.New(t)
 
-	handler := internal.ContentTypeMiddleware(http.HandlerFunc(mockHandler))
+	handler := middleware.ContentType(http.HandlerFunc(mockHandler))
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
 
@@ -45,7 +45,7 @@ func TestRequestIDContextMiddleware(t *testing.T) {
 
 	assert := assert.New(t)
 
-	handler := internal.RequestIDContextMiddleware(http.HandlerFunc(mockHandler))
+	handler := middleware.IDContext(http.HandlerFunc(mockHandler))
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
 
@@ -70,7 +70,7 @@ func TestRequestMethodContextMiddleware(t *testing.T) {
 	const apiVersion = "v1"
 	const route = "testing"
 
-	handler := internal.RequestMethodContextMiddleware(
+	handler := middleware.MethodContext(
 		http.HandlerFunc(mockHandler))
 	router := mux.NewRouter().PathPrefix(
 		fmt.Sprintf("/%s", apiVersion)).Subrouter()
@@ -101,7 +101,7 @@ func TestResponseWriterMiddleware(t *testing.T) {
 
 	assert := assert.New(t)
 
-	handler := internal.NewResponseWriterMiddleware(
+	handler := middleware.NewResponseWriter(
 		writerFactory)(http.HandlerFunc(mockHandler))
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
@@ -125,7 +125,7 @@ func TestRepositoryDirectoryVariableSanitizer(t *testing.T) {
 
 	assert := assert.New(t)
 
-	handler := internal.RepositoryDirectoryVariableSanitizer(
+	handler := middleware.RepositoryDirectoryVariableSanitizer(
 		http.HandlerFunc(mockHandler))
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
@@ -159,7 +159,7 @@ func (suite *NewOpenRepositoryMiddlewareTestSuite) TestReportsRepositoryNotFound
 	reader.On("Open", path).Return(
 		nil, errors.New("repository does not exist"))
 
-	handler := internal.NewOpenRepositoryMiddleware(reader)(suite.handler)
+	handler := middleware.NewOpenRepository(reader)(suite.handler)
 
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
