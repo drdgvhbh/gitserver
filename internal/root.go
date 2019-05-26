@@ -50,7 +50,7 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 
 	// swagger:route GET /repositories/{directory}/commit listCommits
 	//
-	// List commit
+	// List commits
 	//
 	// This will list the commit in the specified repository.
 	//
