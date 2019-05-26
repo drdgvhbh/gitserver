@@ -3,8 +3,9 @@ package request
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/drdgvhbh/gitserver/internal/response"
 	"net/http"
+
+	"github.com/drdgvhbh/gitserver/internal/response"
 )
 
 // NewResponseWriter creates a wrapped http.ResponseWriter
@@ -41,9 +42,11 @@ func (interceptor ResponseWriter) Write(b []byte) (int, error) {
 
 	err := func() error {
 		response := &response.Definition{
-			APIVersion: responseProperties.APIVersion,
-			ID:         requestID,
-			Method:     method,
+			Base: response.Base{
+				APIVersion: responseProperties.APIVersion,
+				ID:         requestID,
+				Method:     method,
+			},
 		}
 		err := json.Unmarshal(b, &response)
 		if err != nil {
