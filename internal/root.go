@@ -53,7 +53,7 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 	repositoriesRouter.Use(middleware.RepositoryDirectoryVariableSanitizer)
 	repositoriesRouter.Use(middleware.NewOpenRepository(fileSystem))
 
-	// swagger:route GET /repositories/{directory}/commit listCommits
+	// swagger:route GET /repositories/{directory}/commits listCommits
 	//
 	// List commits
 	//
