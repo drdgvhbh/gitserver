@@ -15,3 +15,6 @@ coveralls:
 
 test-e2e:
 	go test ./test
+
+generate-docs:
+	swagger generate spec -b ./cmd -o swagger.json
