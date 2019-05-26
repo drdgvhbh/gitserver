@@ -91,12 +91,22 @@ func (suite *ListCommitsInARepoTestSuite) TestDerp() {
 					"name": "Ryan Lee",
 					"email": "drdgvhbh@gmail.com",
 					"timestamp": "2019-05-25T17:19:52-04:00"
+				},
+				"committer": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-25T17:19:52-04:00"
 				}
 			},
 			{
 				"hash": "22b86bcafbc105b45d62772546ef1d2b4bef74f1",
 				"summary": "this is me renaming a directory",
 				"author": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-25T15:18:47-04:00"
+				},
+				"committer": {
 					"name": "Ryan Lee",
 					"email": "drdgvhbh@gmail.com",
 					"timestamp": "2019-05-25T15:18:47-04:00"
@@ -109,12 +119,22 @@ func (suite *ListCommitsInARepoTestSuite) TestDerp() {
 					"name": "Ryan Lee",
 					"email": "drdgvhbh@gmail.com",
 					"timestamp": "2019-05-25T15:18:15-04:00"
+				},
+				"committer": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-25T15:18:15-04:00"
 				}
 			},
 			{
 				"hash": "b322ecd55ffee1cdfd42a68f49f201129d9ef023",
 				"summary": "this is me deleting a file",
 				"author": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-25T15:17:35-04:00"
+				},
+				"committer": {
 					"name": "Ryan Lee",
 					"email": "drdgvhbh@gmail.com",
 					"timestamp": "2019-05-25T15:17:35-04:00"
@@ -127,12 +147,22 @@ func (suite *ListCommitsInARepoTestSuite) TestDerp() {
 					"name": "Ryan Lee",
 					"email": "drdgvhbh@gmail.com",
 					"timestamp": "2019-05-25T15:16:38-04:00"
+				},
+				"committer": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-25T15:16:38-04:00"
 				}
 			},
 			{
 				"hash": "a82386953aa55fe38dd79a3b65742e39298afc2f",
 				"summary": "This is the start of the repo",
 				"author": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-25T15:15:37-04:00"
+				},
+				"committer": {
 					"name": "Ryan Lee",
 					"email": "drdgvhbh@gmail.com",
 					"timestamp": "2019-05-25T15:15:37-04:00"

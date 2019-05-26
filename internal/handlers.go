@@ -25,9 +25,10 @@ type CommitContributor struct {
 }
 
 type CommitLogData struct {
-	Hash    string             `json:"hash,omitempty"`
-	Summary string             `json:"summary,omitempty"`
-	Author  *CommitContributor `json:"author,omitempty"`
+	Hash      string             `json:"hash,omitempty"`
+	Summary   string             `json:"summary,omitempty"`
+	Author    *CommitContributor `json:"author,omitempty"`
+	Committer *CommitContributor `json:"committer,omitempty"`
 }
 
 var (
@@ -93,13 +94,21 @@ func NewCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Reques
 			var commitLogData []interface{}
 
 			err = commitHistory.ForEach(func(commit git.Commit) error {
+				author := commit.Author()
+				committer := commit.Committer()
+
 				commitLogData = append(commitLogData, CommitLogData{
 					Hash:    commit.Hash(),
 					Summary: commit.Summary(),
 					Author: &CommitContributor{
-						Name:      commit.Author().Name(),
-						Email:     commit.Author().Email(),
-						Timestamp: commit.Author().Timestamp().Format(time.RFC3339),
+						Name:      author.Name(),
+						Email:     author.Email(),
+						Timestamp: author.Timestamp().Format(time.RFC3339),
+					},
+					Committer: &CommitContributor{
+						Name:      committer.Name(),
+						Email:     committer.Email(),
+						Timestamp: committer.Timestamp().Format(time.RFC3339),
 					},
 				})
 				return nil
