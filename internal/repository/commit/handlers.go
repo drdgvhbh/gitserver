@@ -3,6 +3,7 @@ package commit
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/drdgvhbh/gitserver/internal/git"
@@ -47,7 +48,7 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 				return err
 			}
 
-			var commitLogData []interface{}
+			var commitLogData []LogData
 
 			err = commitHistory.ForEach(func(commit git.Commit) error {
 				author := commit.Author()
@@ -73,8 +74,21 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 				return err
 			}
 
+			sort.Slice(commitLogData, func(i, j int) bool {
+				leftTimestamp, _ := time.Parse(time.RFC3339, commitLogData[i].Committer.Timestamp)
+				rightTimestamp, _ := time.Parse(time.RFC3339, commitLogData[j].Committer.Timestamp)
+				diff := leftTimestamp.Sub(rightTimestamp)
+
+				return diff.Seconds() > 0
+			})
+
+			data := make([]interface{}, len(commitLogData))
+			for i := range commitLogData {
+				data[i] = commitLogData[i]
+			}
+
 			dataPayload := response.Payload{
-				Data: commitLogData,
+				Data: data,
 			}
 
 			return json.NewEncoder(writer).Encode(&dataPayload)

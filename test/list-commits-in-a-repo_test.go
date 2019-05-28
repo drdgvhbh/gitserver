@@ -91,6 +91,34 @@ func (suite *ListCommitsInARepoTestSuite) TestDerp() {
 	suite.Assert().JSONEq(
 		`[
 			{
+				"hash": "be50985852e7aadc4392fb4809f3f9e265a92694",
+				"summary": "Merge branch 'branch'",
+				"author": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-27T23:11:34-04:00"
+				},
+				"committer": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-27T23:11:34-04:00"
+				}
+			},
+			{
+				"hash": "a7170f7640bb9b9960fe8a20b4454f71f98c423d",
+				"summary": "Branch",
+				"author": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-27T23:08:27-04:00"
+				},
+				"committer": {
+					"name": "Ryan Lee",
+					"email": "drdgvhbh@gmail.com",
+					"timestamp": "2019-05-27T23:08:27-04:00"
+				}
+			},
+			{
 				"hash": "625d85387d80a56a26a5c7ff28d84e49afef2635",
 				"summary": "This is me adding text to a file",
 				"author": {
