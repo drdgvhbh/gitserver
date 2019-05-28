@@ -27,7 +27,7 @@
   "host": "localhost",
   "basePath": "/v1",
   "paths": {
-    "/repositories/{directory}/commit": {
+    "/repositories/{directory}/commits": {
       "get": {
         "security": [
           {
