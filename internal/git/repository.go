@@ -7,6 +7,14 @@ import (
 
 type Hash [20]byte
 
+func (hash Hash) String() string {
+	return plumbing.Hash(hash).String()
+}
+
+func (hash Hash) IsZero() bool {
+	return plumbing.Hash(hash).IsZero()
+}
+
 type LogOptions struct {
 	From Hash
 }
