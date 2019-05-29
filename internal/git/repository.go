@@ -22,6 +22,7 @@ type LogOptions struct {
 type Repository interface {
 	Head() (Reference, error)
 	Log(options *LogOptions) (CommitIter, error)
+	Reference(name ReferenceName) (Reference, error)
 	References() (ReferenceIter, error)
 }
 
@@ -61,4 +62,14 @@ func (repo *GitRepository) References() (ReferenceIter, error) {
 
 	return &GitReferenceIter{Wrapee: wrappedIter}, nil
 
+}
+
+func (repo *GitRepository) Reference(name ReferenceName) (Reference, error) {
+	wrapped, err := repo.Wrapee.Reference(plumbing.ReferenceName(name), false)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &GitReference{Wrapee: wrapped}, nil
 }
