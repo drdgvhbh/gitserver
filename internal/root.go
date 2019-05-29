@@ -9,6 +9,7 @@ import (
 	"github.com/drdgvhbh/gitserver/internal/request/middleware"
 
 	"github.com/drdgvhbh/gitserver/internal/repository/commit"
+	"github.com/drdgvhbh/gitserver/internal/repository/reference"
 	"github.com/drdgvhbh/gitserver/internal/response"
 
 	"github.com/drdgvhbh/gitserver/internal/git"
@@ -73,6 +74,10 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 	//       	200: GetCommitsOkResponse
 	repositoriesRouter.
 		HandleFunc("/commits", commit.NewGetCommitsHandler(fileSystem)).
+		Methods("GET")
+
+	repositoriesRouter.
+		HandleFunc("/references", reference.NewGetReferencesHandler(fileSystem)).
 		Methods("GET")
 
 	return handlers.RecoveryHandler()(router)
