@@ -28,8 +28,16 @@ type Reference struct {
 	mock.Mock
 }
 
-func (*Reference) Hash() git.Hash {
-	return [20]byte{}
+func (r *Reference) Name() git.ReferenceName {
+	args := r.Called()
+
+	return git.ReferenceName(args.String(0))
+}
+
+func (r *Reference) Hash() git.Hash {
+	args := r.Called()
+
+	return args.Get(0).(git.Hash)
 }
 
 type Repository struct {
@@ -46,6 +54,18 @@ func (r *Repository) Log(options *git.LogOptions) (git.CommitIter, error) {
 	args := r.Called(options)
 
 	return &CommitIter{}, args.Error(1)
+}
+
+func (r *Repository) References() (git.ReferenceIter, error) {
+	args := r.Called()
+
+	return args.Get(0).(git.ReferenceIter), args.Error(1)
+}
+
+func (r *Repository) Reference(name git.ReferenceName) (git.Reference, error) {
+	args := r.Called()
+
+	return args.Get(0).(git.Reference), args.Error(1)
 }
 
 type Reader struct {
