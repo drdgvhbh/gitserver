@@ -18,7 +18,7 @@ type Contributor struct {
 	Timestamp string `json:"timestamp,omitempty"`
 }
 
-type LogData struct {
+type Commit struct {
 	// The hash of the commit
 	//
 	// required: true

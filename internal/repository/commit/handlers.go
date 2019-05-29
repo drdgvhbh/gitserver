@@ -25,7 +25,7 @@ type GetCommitsOKResponse struct {
 		// The response data
 		//
 		// required: true
-		Data []LogData `json:"data,omitempty"`
+		Data []Commit `json:"data,omitempty"`
 	}
 }
 
@@ -48,13 +48,13 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 				return err
 			}
 
-			var commitLogData []LogData
+			var commitData []Commit
 
 			err = commitHistory.ForEach(func(commit git.Commit) error {
 				author := commit.Author()
 				committer := commit.Committer()
 
-				commitLogData = append(commitLogData, LogData{
+				commitData = append(commitData, Commit{
 					Hash:    commit.Hash(),
 					Summary: commit.Summary(),
 					Author: &Contributor{
@@ -74,17 +74,17 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 				return err
 			}
 
-			sort.Slice(commitLogData, func(i, j int) bool {
-				leftTimestamp, _ := time.Parse(time.RFC3339, commitLogData[i].Committer.Timestamp)
-				rightTimestamp, _ := time.Parse(time.RFC3339, commitLogData[j].Committer.Timestamp)
+			sort.Slice(commitData, func(i, j int) bool {
+				leftTimestamp, _ := time.Parse(time.RFC3339, commitData[i].Committer.Timestamp)
+				rightTimestamp, _ := time.Parse(time.RFC3339, commitData[j].Committer.Timestamp)
 				diff := leftTimestamp.Sub(rightTimestamp)
 
 				return diff.Seconds() > 0
 			})
 
-			data := make([]interface{}, len(commitLogData))
-			for i := range commitLogData {
-				data[i] = commitLogData[i]
+			data := make([]interface{}, len(commitData))
+			for i := range commitData {
+				data[i] = commitData[i]
 			}
 
 			dataPayload := response.Payload{
