@@ -24,16 +24,24 @@ type Commit struct {
 	// required: true
 	// example: e38e2cde1fada4a738f2461b283e561bc767568b
 	Hash string `json:"hash,omitempty"`
+
 	// The summary of the commit
 	//
 	// example: Deletes swagger documentation from the repository
 	Summary string `json:"summary,omitempty"`
+
 	// The author of the commit
 	//
 	// required: true
 	Author *Contributor `json:"author,omitempty"`
+
 	// The committer of the commit
 	//
 	// required: true
 	Committer *Contributor `json:"committer,omitempty"`
+
+	// The references pointing to this commit
+	//
+	// required: true
+	References []string `json:"references,omitempty"`
 }
