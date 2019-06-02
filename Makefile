@@ -14,6 +14,7 @@ coveralls:
 	go test -v -covermode=count -coverprofile=coverage.out ./internal/...
 
 test-e2e:
+	cd ./test/simple-git-repo && git checkout master && git checkout --detach
 	go test ./test
 
 generate-docs:
