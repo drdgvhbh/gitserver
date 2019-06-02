@@ -9,6 +9,24 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// List of references in the repository
+// swagger:response GetReferencesOkResponse
+type GetReferencesOKResponse struct {
+	// in: body
+	Body struct {
+		response.Base
+		// The request method
+		//
+		// required: true
+		// example: repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.references.get
+		Method string `json:"method,omitempty"`
+		// The response data
+		//
+		// required: true
+		Data []Reference `json:"data,omitempty"`
+	}
+}
+
 func NewGetReferencesHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		vars := mux.Vars(request)

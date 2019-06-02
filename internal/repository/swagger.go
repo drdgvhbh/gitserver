@@ -1,6 +1,6 @@
 package repository
 
-// swagger:parameters listCommits
+// swagger:parameters listCommits listReferences
 type Params struct {
 	// The directory of the repository
 	//
@@ -8,4 +8,3 @@ type Params struct {
 	// required: true
 	Directory string `json:"directory"`
 }
-

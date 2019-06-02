@@ -76,6 +76,24 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 		HandleFunc("/commits", commit.NewGetCommitsHandler(fileSystem)).
 		Methods("GET")
 
+	// swagger:route GET /repositories/{directory}/references listReferences
+	//
+	// List references
+	//
+	// This will list the references in the specified repository.
+	//
+	//     	Consumes:
+	//     	- application/json
+	//
+	//			Produces:
+	//			- application/json
+	//
+	//			Schemes: http
+	//
+	//			Security:
+	//				api_key:
+	//			Responses:
+	//       	200: GetReferencesOkResponse
 	repositoriesRouter.
 		HandleFunc("/references", reference.NewGetReferencesHandler(fileSystem)).
 		Methods("GET")

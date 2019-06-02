@@ -62,9 +62,83 @@
           }
         }
       }
+    },
+    "/repositories/{directory}/references": {
+      "get": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "This will list the references in the specified repository.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "List references",
+        "operationId": "listReferences",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Directory",
+            "description": "The directory of the repository",
+            "name": "directory",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetReferencesOkResponse"
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "Commit": {
+      "type": "object",
+      "required": [
+        "hash",
+        "author",
+        "committer",
+        "references"
+      ],
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/Contributor"
+        },
+        "committer": {
+          "$ref": "#/definitions/Contributor"
+        },
+        "hash": {
+          "description": "The hash of the commit",
+          "type": "string",
+          "x-go-name": "Hash",
+          "example": "e38e2cde1fada4a738f2461b283e561bc767568b"
+        },
+        "references": {
+          "description": "The references pointing to this commit",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "References"
+        },
+        "summary": {
+          "description": "The summary of the commit",
+          "type": "string",
+          "x-go-name": "Summary",
+          "example": "Deletes swagger documentation from the repository"
+        }
+      },
+      "x-go-package": "github.com/drdgvhbh/gitserver/internal/repository/commit"
+    },
     "Contributor": {
       "type": "object",
       "required": [
@@ -94,34 +168,27 @@
       },
       "x-go-package": "github.com/drdgvhbh/gitserver/internal/repository/commit"
     },
-    "LogData": {
+    "Reference": {
       "type": "object",
       "required": [
         "hash",
-        "author",
-        "committer"
+        "name"
       ],
       "properties": {
-        "author": {
-          "$ref": "#/definitions/Contributor"
-        },
-        "committer": {
-          "$ref": "#/definitions/Contributor"
-        },
         "hash": {
-          "description": "The hash of the commit",
+          "description": "The hash of the commit this reference points to",
           "type": "string",
           "x-go-name": "Hash",
           "example": "e38e2cde1fada4a738f2461b283e561bc767568b"
         },
-        "summary": {
-          "description": "The summary of the commit",
+        "name": {
+          "description": "The name of the reference",
           "type": "string",
-          "x-go-name": "Summary",
-          "example": "Deletes swagger documentation from the repository"
+          "x-go-name": "Name",
+          "example": "refs/heads/master"
         }
       },
-      "x-go-package": "github.com/drdgvhbh/gitserver/internal/repository/commit"
+      "x-go-package": "github.com/drdgvhbh/gitserver/internal/repository/reference"
     }
   },
   "responses": {
@@ -146,7 +213,7 @@
             "description": "The response data",
             "type": "array",
             "items": {
-              "$ref": "#/definitions/LogData"
+              "$ref": "#/definitions/Commit"
             },
             "x-go-name": "Data"
           },
@@ -161,6 +228,46 @@
             "type": "string",
             "x-go-name": "Method",
             "example": "repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.get"
+          }
+        }
+      }
+    },
+    "GetReferencesOkResponse": {
+      "description": "List of references in the repository",
+      "schema": {
+        "type": "object",
+        "required": [
+          "apiVersion",
+          "id",
+          "method",
+          "data"
+        ],
+        "properties": {
+          "apiVersion": {
+            "description": "The API version",
+            "type": "string",
+            "x-go-name": "APIVersion",
+            "example": "0.0.1"
+          },
+          "data": {
+            "description": "The response data",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Reference"
+            },
+            "x-go-name": "Data"
+          },
+          "id": {
+            "description": "The request ID",
+            "type": "string",
+            "x-go-name": "ID",
+            "example": "dc380b72-41c9-47bf-8be5-f3a7a493f4ca"
+          },
+          "method": {
+            "description": "The request method",
+            "type": "string",
+            "x-go-name": "Method",
+            "example": "repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.references.get"
           }
         }
       }
