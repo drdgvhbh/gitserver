@@ -22,6 +22,10 @@ type GitReferenceIter struct {
 	Wrapee storer.ReferenceIter
 }
 
+func isValidReference(hash string) bool {
+	return hash != "0000000000000000000000000000000000000000"
+}
+
 func (iter *GitReferenceIter) Next() (Reference, error) {
 	reference, err := iter.Wrapee.Next()
 
@@ -36,9 +40,13 @@ func (iter *GitReferenceIter) Next() (Reference, error) {
 
 func (iter *GitReferenceIter) ForEach(fn func(Reference) error) error {
 	return iter.Wrapee.ForEach(func(reference *plumbing.Reference) error {
-		return fn(&GitReference{
-			Wrapee: reference,
-		})
+		if isValidReference(reference.Hash().String()) {
+			return fn(&GitReference{
+				Wrapee: reference,
+			})
+		}
+
+		return nil
 	})
 }
 
@@ -57,4 +65,3 @@ func (ref *GitReference) Hash() Hash {
 func (ref *GitReference) Name() ReferenceName {
 	return ReferenceName(ref.Wrapee.Name())
 }
-
