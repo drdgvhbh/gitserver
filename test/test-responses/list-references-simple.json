@@ -1,0 +1,17 @@
+[{
+    "hash": "be50985852e7aadc4392fb4809f3f9e265a92694",
+    "name": "refs/heads/master"
+  },
+  {
+    "hash": "a7170f7640bb9b9960fe8a20b4454f71f98c423d",
+    "name": "refs/remotes/origin/branch"
+  },
+  {
+    "hash": "be50985852e7aadc4392fb4809f3f9e265a92694",
+    "name": "refs/remotes/origin/master"
+  },
+  {
+    "hash": "be50985852e7aadc4392fb4809f3f9e265a92694",
+    "name": "HEAD"
+  }
+]
