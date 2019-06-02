@@ -17,5 +17,10 @@ func (tree *GitTree) Diff(otherTree Tree) (Changes, error) {
 		return nil, err
 	}
 
-	return &GitChanges{Wrapee: changes}, nil
+	var mappedChanges Changes
+	for _, change := range changes {
+		mappedChanges = append(mappedChanges, &GitChange{Wrapee: change})
+	}
+
+	return mappedChanges, nil
 }
