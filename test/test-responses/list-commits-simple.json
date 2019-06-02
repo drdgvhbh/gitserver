@@ -10,7 +10,12 @@
       "name": "Ryan Lee",
       "email": "drdgvhbh@gmail.com",
       "timestamp": "2019-05-27T23:11:34-04:00"
-    }
+    },
+    "references": [
+      "refs/heads/master",
+      "refs/remotes/origin/master",
+      "HEAD"
+    ]
   },
   {
     "hash": "a7170f7640bb9b9960fe8a20b4454f71f98c423d",
@@ -24,7 +29,10 @@
       "name": "Ryan Lee",
       "email": "drdgvhbh@gmail.com",
       "timestamp": "2019-05-27T23:08:27-04:00"
-    }
+    },
+    "references": [
+      "refs/remotes/origin/branch"
+    ]
   },
   {
     "hash": "625d85387d80a56a26a5c7ff28d84e49afef2635",
