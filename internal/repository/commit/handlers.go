@@ -70,6 +70,10 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 			err = commitHistory.ForEach(func(commit git.Commit) error {
 				author := commit.Author()
 				committer := commit.Committer()
+				commitRefs := references[commit.Hash()]
+				if commitRefs == nil {
+					commitRefs = make([]string, 0)
+				}
 
 				commitData = append(commitData, Commit{
 					Hash:    commit.Hash(),
@@ -84,7 +88,7 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 						Email:     committer.Email(),
 						Timestamp: committer.Timestamp().Format(time.RFC3339),
 					},
-					References: references[commit.Hash()],
+					References: commitRefs,
 				})
 				return nil
 			})

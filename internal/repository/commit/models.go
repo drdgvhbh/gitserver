@@ -43,5 +43,5 @@ type Commit struct {
 	// The references pointing to this commit
 	//
 	// required: true
-	References []string `json:"references,omitempty"`
+	References []string `json:"references"`
 }
