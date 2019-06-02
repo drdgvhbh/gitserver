@@ -1,8 +1,9 @@
 package git
 
 import (
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"strings"
+
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 type Commit interface {
@@ -10,6 +11,7 @@ type Commit interface {
 	Hash() string
 	Author() Signature
 	Committer() Signature
+	Tree() (Tree, error)
 }
 
 type GitCommit struct {
@@ -36,6 +38,16 @@ func (commit *GitCommit) Author() Signature {
 
 func (commit *GitCommit) Committer() Signature {
 	return &SignatureWrapper{commit.Wrapee.Committer}
+}
+
+func (commit *GitCommit) Tree() (Tree, error) {
+	tree, err := commit.Wrapee.Tree()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &GitTree{Wrapee: tree}, nil
 }
 
 type CommitIter interface {
@@ -71,4 +83,3 @@ func (iter *GitCommitIter) ForEach(fn func(Commit) error) error {
 func (iter *GitCommitIter) Close() {
 	iter.Wrapee.Close()
 }
-
