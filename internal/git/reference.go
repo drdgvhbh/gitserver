@@ -65,3 +65,15 @@ func (ref *GitReference) Hash() Hash {
 func (ref *GitReference) Name() ReferenceName {
 	return ReferenceName(ref.Wrapee.Name())
 }
+
+type References []Reference
+
+func (refs References) MapStr(fn func(ref Reference) string) []string {
+	result := make([]string, 0)
+
+	for _, ref := range refs {
+		result = append(result, fn(ref))
+	}
+
+	return result
+}

@@ -2,6 +2,7 @@ package commit
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/drdgvhbh/gitserver/internal/git"
 	"github.com/drdgvhbh/gitserver/internal/response"
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 )
 
 // List of commits in the repository
@@ -68,28 +70,8 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 
 			defer commitHistory.Close()
 			err = commitHistory.ForEach(func(commit git.Commit) error {
-				author := commit.Author()
-				committer := commit.Committer()
 				commitRefs := references[commit.Hash()]
-				if commitRefs == nil {
-					commitRefs = make([]string, 0)
-				}
-
-				commitData = append(commitData, Commit{
-					Hash:    commit.Hash(),
-					Summary: commit.Summary(),
-					Author: &Contributor{
-						Name:      author.Name(),
-						Email:     author.Email(),
-						Timestamp: author.Timestamp().Format(time.RFC3339),
-					},
-					Committer: &Contributor{
-						Name:      committer.Name(),
-						Email:     committer.Email(),
-						Timestamp: committer.Timestamp().Format(time.RFC3339),
-					},
-					References: commitRefs,
-				})
+				commitData = append(commitData, *NewCommit(commit, commitRefs))
 				return nil
 			})
 			if err != nil {
@@ -126,6 +108,69 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 			if err != nil {
 				panic(err)
 			}
+		}
+	}
+}
+
+func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		vars := mux.Vars(req)
+		repositoryPath := vars["directory"]
+		commitHash := vars["hash"]
+		repository, _ := reader.Open(repositoryPath)
+
+		opts := &git.LogOptions{
+			From: git.NewHash(commitHash),
+		}
+
+		err := (func() error {
+			commitHistory, err := repository.Log(opts)
+			if err != nil {
+				return err
+			}
+
+			specifiedCommit, err := commitHistory.Next()
+			if err != nil {
+				logrus.Println(err)
+				return err
+			}
+			if specifiedCommit == nil {
+				w.WriteHeader(http.StatusNotFound)
+				return fmt.Errorf("commit '%s' not found", commitHash)
+			}
+
+			refs, err := repository.ReferenceMap()
+			if err != nil {
+				return err
+			}
+			refNames := refs[specifiedCommit.Hash()].MapStr(func(ref git.Reference) string {
+				return string(ref.Name())
+			})
+
+			var commitData []Commit
+			commitData = append(commitData, *NewCommit(specifiedCommit, refNames))
+
+			data := make([]interface{}, len(commitData))
+			for i := range commitData {
+				data[i] = commitData[i]
+			}
+
+			dataPayload := response.Payload{
+				Data: data,
+			}
+
+			_ = json.NewEncoder(w).Encode(&dataPayload)
+
+			return nil
+		})()
+
+		if err != nil {
+			errPayload := response.Payload{
+				Errors: map[string]interface{}{
+					"error": err.Error(),
+				},
+			}
+			_ = json.NewEncoder(w).Encode(&errPayload)
 		}
 	}
 }

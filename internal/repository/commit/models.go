@@ -1,5 +1,11 @@
 package commit
 
+import (
+	"time"
+
+	"github.com/drdgvhbh/gitserver/internal/git"
+)
+
 type Contributor struct {
 	// Contributor's Name
 	//
@@ -44,4 +50,30 @@ type Commit struct {
 	//
 	// required: true
 	References []string `json:"references"`
+}
+
+func NewCommit(c git.Commit, ref []string) *Commit {
+	commitRefs := ref
+	if commitRefs == nil {
+		commitRefs = make([]string, 0)
+	}
+
+	author := c.Author()
+	committer := c.Committer()
+
+	return &Commit{
+		Hash:    c.Hash(),
+		Summary: c.Summary(),
+		Author: &Contributor{
+			Name:      author.Name(),
+			Email:     author.Email(),
+			Timestamp: author.Timestamp().Format(time.RFC3339),
+		},
+		Committer: &Contributor{
+			Name:      committer.Name(),
+			Email:     committer.Email(),
+			Timestamp: committer.Timestamp().Format(time.RFC3339),
+		},
+		References: commitRefs,
+	}
 }

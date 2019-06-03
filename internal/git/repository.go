@@ -15,6 +15,10 @@ func (hash Hash) IsZero() bool {
 	return plumbing.Hash(hash).IsZero()
 }
 
+func NewHash(s string) Hash {
+	return Hash(plumbing.NewHash(s))
+}
+
 type LogOptions struct {
 	From Hash
 }
@@ -24,6 +28,7 @@ type Repository interface {
 	Log(options *LogOptions) (CommitIter, error)
 	Reference(name ReferenceName) (Reference, error)
 	References() (ReferenceIter, error)
+	ReferenceMap() (map[string]References, error)
 }
 
 type GitRepository struct {
@@ -72,4 +77,24 @@ func (repo *GitRepository) Reference(name ReferenceName) (Reference, error) {
 	}
 
 	return &GitReference{Wrapee: wrapped}, nil
+}
+
+func (r *GitRepository) ReferenceMap() (map[string]References, error) {
+	iter, err := r.References()
+	if err != nil {
+		return nil, err
+	}
+
+	defer iter.Close()
+
+	refs := make(map[string]References)
+
+	_ = iter.ForEach(func(ref Reference) error {
+		hash := ref.Hash().String()
+		refs[hash] = append(refs[hash], ref)
+
+		return nil
+	})
+
+	return refs, nil
 }
