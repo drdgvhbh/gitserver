@@ -10,7 +10,6 @@ import (
 	"github.com/drdgvhbh/gitserver/internal/git"
 	"github.com/drdgvhbh/gitserver/internal/response"
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
 )
 
 // List of commits in the repository
@@ -119,22 +118,10 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 		commitHash := vars["hash"]
 		repository, _ := reader.Open(repositoryPath)
 
-		opts := &git.LogOptions{
-			From: git.NewHash(commitHash),
-		}
-
 		err := (func() error {
-			commitHistory, err := repository.Log(opts)
-			if err != nil {
-				return err
-			}
+			specifiedCommit, err := repository.FindCommit(git.NewHash(commitHash))
 
-			specifiedCommit, err := commitHistory.Next()
 			if err != nil {
-				logrus.Println(err)
-				return err
-			}
-			if specifiedCommit == nil {
 				w.WriteHeader(http.StatusNotFound)
 				return fmt.Errorf("commit '%s' not found", commitHash)
 			}

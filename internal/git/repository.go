@@ -26,6 +26,7 @@ type LogOptions struct {
 type Repository interface {
 	Head() (Reference, error)
 	Log(options *LogOptions) (CommitIter, error)
+	FindCommit(hash Hash) (Commit, error)
 	Reference(name ReferenceName) (Reference, error)
 	References() (ReferenceIter, error)
 	ReferenceMap() (map[string]References, error)
@@ -97,4 +98,20 @@ func (r *GitRepository) ReferenceMap() (map[string]References, error) {
 	})
 
 	return refs, nil
+}
+
+func (r *GitRepository) FindCommit(hash Hash) (Commit, error) {
+	log, err := r.Log(&LogOptions{
+		From: hash,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	c, err := log.Next()
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
