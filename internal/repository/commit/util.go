@@ -42,3 +42,14 @@ func writeError(err error, w http.ResponseWriter) {
 		}
 	}
 }
+
+func writeData(data []interface{}, w http.ResponseWriter) {
+	dataPayload := response.Payload{
+		Data: data,
+	}
+
+	err := json.NewEncoder(w).Encode(&dataPayload)
+	if err != nil {
+		logrus.Warnln(err)
+	}
+}

@@ -1,7 +1,6 @@
 package commit
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"sort"
@@ -84,11 +83,9 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 				data[i] = commitData[i]
 			}
 
-			dataPayload := response.Payload{
-				Data: data,
-			}
+			writeData(data, writer)
 
-			return json.NewEncoder(writer).Encode(&dataPayload)
+			return nil
 		})()
 	}
 }
@@ -127,11 +124,7 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 				data[i] = commitData[i]
 			}
 
-			dataPayload := response.Payload{
-				Data: data,
-			}
-
-			_ = json.NewEncoder(w).Encode(&dataPayload)
+			writeData(data, w)
 
 			return nil
 		})()
