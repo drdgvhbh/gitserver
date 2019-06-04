@@ -1,7 +1,12 @@
 package commit
 
 import (
+	"encoding/json"
+	"net/http"
+
 	"github.com/drdgvhbh/gitserver/internal/git"
+	"github.com/drdgvhbh/gitserver/internal/response"
+	"github.com/sirupsen/logrus"
 )
 
 func hashToRefNames(r git.Repository) (map[string][]string, error) {
@@ -22,4 +27,18 @@ func hashToRefNames(r git.Repository) (map[string][]string, error) {
 	})
 
 	return refMap, nil
+}
+
+func writeError(err error, w http.ResponseWriter) {
+	if err != nil {
+		errorPayload := response.Payload{
+			Errors: map[string]interface{}{
+				"error": err,
+			},
+		}
+		err = json.NewEncoder(w).Encode(&errorPayload)
+		if err != nil {
+			logrus.Warnln(err)
+		}
+	}
 }

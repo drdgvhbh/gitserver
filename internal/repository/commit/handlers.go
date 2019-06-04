@@ -37,7 +37,12 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 		repositoryPath := vars["directory"]
 		repository, _ := reader.Open(repositoryPath)
 
-		err := (func() error {
+		var err error
+		defer (func() {
+			writeError(err, writer)
+		})()
+
+		err = (func() error {
 			head, err := repository.Head()
 			if err != nil {
 				return err
@@ -85,18 +90,6 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 
 			return json.NewEncoder(writer).Encode(&dataPayload)
 		})()
-
-		if err != nil {
-			errorPayload := response.Payload{
-				Errors: map[string]interface{}{
-					"error": err,
-				},
-			}
-			err = json.NewEncoder(writer).Encode(&errorPayload)
-			if err != nil {
-				panic(err)
-			}
-		}
 	}
 }
 
@@ -107,7 +100,12 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 		commitHash := vars["hash"]
 		repository, _ := reader.Open(repositoryPath)
 
-		err := (func() error {
+		var err error
+		defer (func() {
+			writeError(err, w)
+		})()
+
+		err = (func() error {
 			specifiedCommit, err := repository.FindCommit(git.NewHash(commitHash))
 
 			if err != nil {
@@ -137,14 +135,5 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 
 			return nil
 		})()
-
-		if err != nil {
-			errPayload := response.Payload{
-				Errors: map[string]interface{}{
-					"error": err.Error(),
-				},
-			}
-			_ = json.NewEncoder(w).Encode(&errPayload)
-		}
 	}
 }
