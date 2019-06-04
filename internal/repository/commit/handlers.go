@@ -49,27 +49,16 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 				return err
 			}
 
-			references := make(map[string][]string)
-
-			refIter, err := repository.References()
+			hashToRefNames, err := hashToRefNames(repository)
 			if err != nil {
 				return err
 			}
-
-			defer refIter.Close()
-
-			_ = refIter.ForEach(func(ref git.Reference) error {
-				hash := ref.Hash().String()
-				references[hash] = append(references[hash], string(ref.Name()))
-
-				return nil
-			})
 
 			var commitData []Commit
 
 			defer commitHistory.Close()
 			err = commitHistory.ForEach(func(commit git.Commit) error {
-				commitRefs := references[commit.Hash()]
+				commitRefs := hashToRefNames[commit.Hash()]
 				commitData = append(commitData, *NewCommit(commit, commitRefs))
 				return nil
 			})
@@ -126,16 +115,14 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 				return fmt.Errorf("commit '%s' not found", commitHash)
 			}
 
-			refs, err := repository.ReferenceMap()
+			hashToRefNames, err := hashToRefNames(repository)
 			if err != nil {
 				return err
 			}
-			refNames := refs[specifiedCommit.Hash()].MapStr(func(ref git.Reference) string {
-				return string(ref.Name())
-			})
+			commitRefNames := hashToRefNames[specifiedCommit.Hash()]
 
 			var commitData []Commit
-			commitData = append(commitData, *NewCommit(specifiedCommit, refNames))
+			commitData = append(commitData, *NewCommit(specifiedCommit, commitRefNames))
 
 			data := make([]interface{}, len(commitData))
 			for i := range commitData {
