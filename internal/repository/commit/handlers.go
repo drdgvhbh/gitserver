@@ -1,7 +1,7 @@
 package commit
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -36,7 +36,12 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 		repositoryPath := vars["directory"]
 		repository, _ := reader.Open(repositoryPath)
 
-		err := (func() error {
+		var err error
+		defer (func() {
+			writeError(err, writer)
+		})()
+
+		err = (func() error {
 			head, err := repository.Head()
 			if err != nil {
 				return err
@@ -48,48 +53,17 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 				return err
 			}
 
-			references := make(map[string][]string)
-
-			refIter, err := repository.References()
+			hashToRefNames, err := hashToRefNames(repository)
 			if err != nil {
 				return err
 			}
-
-			defer refIter.Close()
-
-			_ = refIter.ForEach(func(ref git.Reference) error {
-				hash := ref.Hash().String()
-				references[hash] = append(references[hash], string(ref.Name()))
-
-				return nil
-			})
 
 			var commitData []Commit
 
 			defer commitHistory.Close()
 			err = commitHistory.ForEach(func(commit git.Commit) error {
-				author := commit.Author()
-				committer := commit.Committer()
-				commitRefs := references[commit.Hash()]
-				if commitRefs == nil {
-					commitRefs = make([]string, 0)
-				}
-
-				commitData = append(commitData, Commit{
-					Hash:    commit.Hash(),
-					Summary: commit.Summary(),
-					Author: &Contributor{
-						Name:      author.Name(),
-						Email:     author.Email(),
-						Timestamp: author.Timestamp().Format(time.RFC3339),
-					},
-					Committer: &Contributor{
-						Name:      committer.Name(),
-						Email:     committer.Email(),
-						Timestamp: committer.Timestamp().Format(time.RFC3339),
-					},
-					References: commitRefs,
-				})
+				commitRefs := hashToRefNames[commit.Hash()]
+				commitData = append(commitData, *NewCommit(commit, commitRefs))
 				return nil
 			})
 			if err != nil {
@@ -109,23 +83,50 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 				data[i] = commitData[i]
 			}
 
-			dataPayload := response.Payload{
-				Data: data,
-			}
+			writeData(data, writer)
 
-			return json.NewEncoder(writer).Encode(&dataPayload)
+			return nil
+		})()
+	}
+}
+
+func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		vars := mux.Vars(req)
+		repositoryPath := vars["directory"]
+		commitHash := vars["hash"]
+		repository, _ := reader.Open(repositoryPath)
+
+		var err error
+		defer (func() {
+			writeError(err, w)
 		})()
 
-		if err != nil {
-			errorPayload := response.Payload{
-				Errors: map[string]interface{}{
-					"error": err,
-				},
-			}
-			err = json.NewEncoder(writer).Encode(&errorPayload)
+		err = (func() error {
+			specifiedCommit, err := repository.FindCommit(git.NewHash(commitHash))
+
 			if err != nil {
-				panic(err)
+				w.WriteHeader(http.StatusNotFound)
+				return fmt.Errorf("commit '%s' not found", commitHash)
 			}
-		}
+
+			hashToRefNames, err := hashToRefNames(repository)
+			if err != nil {
+				return err
+			}
+			commitRefNames := hashToRefNames[specifiedCommit.Hash()]
+
+			var commitData []Commit
+			commitData = append(commitData, *NewCommit(specifiedCommit, commitRefNames))
+
+			data := make([]interface{}, len(commitData))
+			for i := range commitData {
+				data[i] = commitData[i]
+			}
+
+			writeData(data, w)
+
+			return nil
+		})()
 	}
 }

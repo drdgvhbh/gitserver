@@ -68,6 +68,18 @@ func (r *Repository) Reference(name git.ReferenceName) (git.Reference, error) {
 	return args.Get(0).(git.Reference), args.Error(1)
 }
 
+func (r *Repository) FindCommit(hash git.Hash) (git.Commit, error) {
+	args := r.Called()
+
+	return args.Get(0).(git.Commit), args.Error(1)
+}
+
+func (r *Repository) ReferenceMap() (map[string]git.References, error) {
+	args := r.Called()
+
+	return args.Get(0).(map[string]git.References), args.Error(1)
+}
+
 type Reader struct {
 	mock.Mock
 }

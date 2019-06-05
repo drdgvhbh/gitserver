@@ -65,3 +65,5 @@ func (ref *GitReference) Hash() Hash {
 func (ref *GitReference) Name() ReferenceName {
 	return ReferenceName(ref.Wrapee.Name())
 }
+
+type References []Reference
