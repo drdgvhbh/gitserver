@@ -77,3 +77,15 @@ func NewCommit(c git.Commit, ref []string) *Commit {
 		References: commitRefs,
 	}
 }
+
+func NewChange(changeType string, path string) *Change {
+	return &Change{
+		Type: changeType,
+		Path: path,
+	}
+}
+
+type Change struct {
+	Type string `json:"type"`
+	Path string `json:"path"`
+}

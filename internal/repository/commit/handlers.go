@@ -9,6 +9,7 @@ import (
 	"github.com/drdgvhbh/gitserver/internal/git"
 	"github.com/drdgvhbh/gitserver/internal/response"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 // List of commits in the repository
@@ -128,5 +129,61 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 
 			return nil
 		})()
+	}
+}
+
+func NewGetCommitDiffHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		vars := mux.Vars(req)
+		repositoryPath := vars["directory"]
+		commitHash := vars["hash"]
+		repository, _ := reader.Open(repositoryPath)
+
+		var err error
+		defer (func() {
+			writeError(err, w)
+		})()
+
+		err = (func() error {
+			changes, err := repository.Diff(git.NewHash(commitHash))
+			if err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				return errors.Wrapf(err, "commit '%s' not found", commitHash)
+			}
+
+			var changeData []*Change
+
+			for _, change := range changes {
+				changeType, err := change.Action()
+				if err != nil {
+					return errors.Wrapf(err, "change has no type")
+				}
+				changeTypeStr, err := changeType.String()
+				if err != nil {
+					return errors.Wrapf(err, "change cannot be converted to string")
+				}
+
+				var path string
+				switch changeType {
+				case git.Insert:
+					path = change.FilePathAfter()
+				case git.Modify:
+					path = change.FilePathAfter()
+				case git.Delete:
+					path = change.FilePathBefore()
+				}
+
+				changeData = append(changeData, NewChange(changeTypeStr, path))
+			}
+
+			data := make([]interface{}, len(changeData))
+			for i := range changeData {
+				data[i] = changeData[i]
+			}
+			writeData(data, w)
+
+			return nil
+		})()
+
 	}
 }

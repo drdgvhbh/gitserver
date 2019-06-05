@@ -144,7 +144,7 @@ func (r *GitRepository) Diff(hash Hash) (Changes, error) {
 		return nil, errors.Wrapf(err, "commit %s has no tree", parent.Hash())
 	}
 
-	changes, err := commitTree.Diff(parentTree)
+	changes, err := parentTree.Diff(commitTree)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot diff commit %s with parent commit %s",
 			commit.Hash(),

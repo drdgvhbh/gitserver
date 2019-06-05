@@ -2,18 +2,14 @@ package git
 
 import "gopkg.in/src-d/go-git.v4/plumbing/object"
 
-type Action int
-
-const (
-	_ Action = iota
-	Insert
-	Delete
-	Modify
-)
-
 type Changes = []Change
 
-type Change interface{}
+type Change interface {
+	Action() (Action, error)
+	Files() (from, to File, err error)
+	FilePathBefore() string
+	FilePathAfter() string
+}
 
 type GitChange struct {
 	Wrapee *object.Change
@@ -27,6 +23,14 @@ func (c *GitChange) Action() (Action, error) {
 	}
 
 	return Action(action), nil
+}
+
+func (c *GitChange) FilePathBefore() string {
+	return c.Wrapee.From.Name
+}
+
+func (c *GitChange) FilePathAfter() string {
+	return c.Wrapee.To.Name
 }
 
 func (c *GitChange) Files() (from, to File, err error) {
