@@ -27,6 +27,50 @@
   "host": "localhost",
   "basePath": "/v1",
   "paths": {
+    "/repositories/{directory}/commit/{hash}": {
+      "get": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "This will get the specified commit in the specified repository.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Get commit",
+        "operationId": "getCommit",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Directory",
+            "description": "The directory of the repository",
+            "name": "directory",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "x-go-name": "Hash",
+            "description": "The hash of the commit",
+            "name": "hash",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetCommitOkResponse"
+          }
+        }
+      }
+    },
     "/repositories/{directory}/commits": {
       "get": {
         "security": [
@@ -192,6 +236,46 @@
     }
   },
   "responses": {
+    "GetCommitOkResponse": {
+      "description": "Gets the specified commit in the repository",
+      "schema": {
+        "type": "object",
+        "required": [
+          "apiVersion",
+          "id",
+          "method",
+          "data"
+        ],
+        "properties": {
+          "apiVersion": {
+            "description": "The API version",
+            "type": "string",
+            "x-go-name": "APIVersion",
+            "example": "0.0.1"
+          },
+          "data": {
+            "description": "The response data",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Commit"
+            },
+            "x-go-name": "Data"
+          },
+          "id": {
+            "description": "The request ID",
+            "type": "string",
+            "x-go-name": "ID",
+            "example": "dc380b72-41c9-47bf-8be5-f3a7a493f4ca"
+          },
+          "method": {
+            "description": "The request method",
+            "type": "string",
+            "x-go-name": "Method",
+            "example": "repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commit.get"
+          }
+        }
+      }
+    },
     "GetCommitsOkResponse": {
       "description": "List of commits in the repository",
       "schema": {

@@ -91,6 +91,24 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 	}
 }
 
+// Gets the specified commit in the repository
+// swagger:response GetCommitOkResponse
+type GetCommitOKResponse struct {
+	// in: body
+	Body struct {
+		response.Base
+		// The request method
+		//
+		// required: true
+		// example: repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.5dd5708f4c284919b1ef22f44e5d98f7d7579910.get
+		Method string `json:"method,omitempty"`
+		// The response data
+		//
+		// required: true
+		Data []Commit `json:"data,omitempty"`
+	}
+}
+
 func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
