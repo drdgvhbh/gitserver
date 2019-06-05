@@ -151,7 +151,7 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 }
 
 // Gets the diff between the specified commit and its primary parent
-// swagger:response GetCommitOkResponse
+// swagger:response GetCommitChangesOKResponse
 type GetCommitChangesOKResponse struct {
 	// in: body
 	Body struct {

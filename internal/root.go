@@ -101,6 +101,25 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 	commitRouter.
 		HandleFunc("", commit.NewGetCommitHandler(fileSystem)).
 		Methods("GET")
+
+	// swagger:route GET /repositories/{directory}/commit/{hash}/changes getCommitChanges
+	//
+	// Get commit changes
+	//
+	// This will get the changes of the specified commit in the specified repository.
+	//
+	//     	Consumes:
+	//     	- application/json
+	//
+	//			Produces:
+	//			- application/json
+	//
+	//			Schemes: http
+	//
+	//			Security:
+	//				api_key:
+	//			Responses:
+	//       	200: GetCommitChangesOKResponse
 	commitRouter.
 		HandleFunc("/changes", commit.NewGetCommitChangeHandler(fileSystem)).
 		Methods("GET")

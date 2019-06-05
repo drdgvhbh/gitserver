@@ -71,6 +71,50 @@
         }
       }
     },
+    "/repositories/{directory}/commit/{hash}/changes": {
+      "get": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "This will get the changes of the specified commit in the specified repository.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "Get commit changes",
+        "operationId": "getCommitChanges",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Directory",
+            "description": "The directory of the repository",
+            "name": "directory",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "x-go-name": "Hash",
+            "description": "The hash of the commit",
+            "name": "hash",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetCommitChangesOKResponse"
+          }
+        }
+      }
+    },
     "/repositories/{directory}/commits": {
       "get": {
         "security": [
@@ -145,6 +189,20 @@
     }
   },
   "definitions": {
+    "Change": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "x-go-name": "Path"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "github.com/drdgvhbh/gitserver/internal/repository/commit"
+    },
     "Commit": {
       "type": "object",
       "required": [
@@ -236,6 +294,46 @@
     }
   },
   "responses": {
+    "GetCommitChangesOKResponse": {
+      "description": "Gets the diff between the specified commit and its primary parent",
+      "schema": {
+        "type": "object",
+        "required": [
+          "apiVersion",
+          "id",
+          "method",
+          "data"
+        ],
+        "properties": {
+          "apiVersion": {
+            "description": "The API version",
+            "type": "string",
+            "x-go-name": "APIVersion",
+            "example": "0.0.1"
+          },
+          "data": {
+            "description": "The response data",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Change"
+            },
+            "x-go-name": "Data"
+          },
+          "id": {
+            "description": "The request ID",
+            "type": "string",
+            "x-go-name": "ID",
+            "example": "dc380b72-41c9-47bf-8be5-f3a7a493f4ca"
+          },
+          "method": {
+            "description": "The request method",
+            "type": "string",
+            "x-go-name": "Method",
+            "example": "repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.5dd5708f4c284919b1ef22f44e5d98f7d7579910.changes.get"
+          }
+        }
+      }
+    },
     "GetCommitOkResponse": {
       "description": "Gets the specified commit in the repository",
       "schema": {
@@ -271,7 +369,7 @@
             "description": "The request method",
             "type": "string",
             "x-go-name": "Method",
-            "example": "repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commit.get"
+            "example": "repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.5dd5708f4c284919b1ef22f44e5d98f7d7579910.get"
           }
         }
       }

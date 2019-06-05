@@ -1,6 +1,6 @@
 package repository
 
-// swagger:parameters listCommits listReferences getCommit
+// swagger:parameters listCommits listReferences getCommit getCommitChanges
 type Params struct {
 	// The directory of the repository
 	//
@@ -9,7 +9,7 @@ type Params struct {
 	Directory string `json:"directory"`
 }
 
-// swagger:parameters getCommit
+// swagger:parameters getCommit getCommitChanges
 type CommitIDParams struct {
 	// The hash of the commit
 	//
