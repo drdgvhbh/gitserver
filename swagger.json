@@ -22,7 +22,7 @@
       "name": "MIT",
       "url": "http://opensource.org/licenses/MIT"
     },
-    "version": "0.0.1"
+    "version": "0.0.2"
   },
   "host": "localhost",
   "basePath": "/v1",
@@ -309,7 +309,7 @@
             "description": "The API version",
             "type": "string",
             "x-go-name": "APIVersion",
-            "example": "0.0.1"
+            "example": "0.0.2"
           },
           "data": {
             "description": "The response data",
@@ -349,7 +349,7 @@
             "description": "The API version",
             "type": "string",
             "x-go-name": "APIVersion",
-            "example": "0.0.1"
+            "example": "0.0.2"
           },
           "data": {
             "description": "The response data",
@@ -389,7 +389,7 @@
             "description": "The API version",
             "type": "string",
             "x-go-name": "APIVersion",
-            "example": "0.0.1"
+            "example": "0.0.2"
           },
           "data": {
             "description": "The response data",
@@ -429,7 +429,7 @@
             "description": "The API version",
             "type": "string",
             "x-go-name": "APIVersion",
-            "example": "0.0.1"
+            "example": "0.0.2"
           },
           "data": {
             "description": "The response data",

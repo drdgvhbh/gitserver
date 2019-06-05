@@ -22,7 +22,7 @@ var _ = repository.Params{}
 
 var (
 	responseProperties = &response.Properties{
-		APIVersion: "0.0.1",
+		APIVersion: "0.0.2",
 	}
 )
 
