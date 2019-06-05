@@ -150,7 +150,25 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 	}
 }
 
-func NewGetCommitDiffHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
+// Gets the diff between the specified commit and its primary parent
+// swagger:response GetCommitOkResponse
+type GetCommitChangesOKResponse struct {
+	// in: body
+	Body struct {
+		response.Base
+		// The request method
+		//
+		// required: true
+		// example: repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.5dd5708f4c284919b1ef22f44e5d98f7d7579910.changes.get
+		Method string `json:"method,omitempty"`
+		// The response data
+		//
+		// required: true
+		Data []Change `json:"data,omitempty"`
+	}
+}
+
+func NewGetCommitChangeHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 		repositoryPath := vars["directory"]

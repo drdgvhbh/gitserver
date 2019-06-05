@@ -102,7 +102,7 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 		HandleFunc("", commit.NewGetCommitHandler(fileSystem)).
 		Methods("GET")
 	commitRouter.
-		HandleFunc("/diff", commit.NewGetCommitDiffHandler(fileSystem)).
+		HandleFunc("/changes", commit.NewGetCommitChangeHandler(fileSystem)).
 		Methods("GET")
 
 	// swagger:route GET /repositories/{directory}/references listReferences
