@@ -191,13 +191,25 @@
   "definitions": {
     "Change": {
       "type": "object",
+      "required": [
+        "type",
+        "path"
+      ],
       "properties": {
         "path": {
+          "description": "The relative file path in the repository",
           "type": "string",
-          "x-go-name": "Path"
+          "x-go-name": "Path",
+          "example": "lib/dart/example.dart"
         },
         "type": {
+          "description": "The type of change",
           "type": "string",
+          "enum": [
+            "MODIFY",
+            "INSERT",
+            "DELETE"
+          ],
           "x-go-name": "Type"
         }
       },

@@ -86,6 +86,14 @@ func NewChange(changeType string, path string) *Change {
 }
 
 type Change struct {
+	// The type of change
+	//
+	// enum: MODIFY,INSERT,DELETE
+	// required: true
 	Type string `json:"type"`
+	// The relative file path in the repository
+	//
+	// required: true
+	// example: lib/dart/example.dart
 	Path string `json:"path"`
 }
