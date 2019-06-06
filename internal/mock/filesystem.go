@@ -80,6 +80,12 @@ func (r *Repository) ReferenceMap() (map[string]git.References, error) {
 	return args.Get(0).(map[string]git.References), args.Error(1)
 }
 
+func (r *Repository) Diff(hash git.Hash) (git.Changes, error) {
+	args := r.Called()
+
+	return args.Get(0).(git.Changes), args.Error(1)
+}
+
 type Reader struct {
 	mock.Mock
 }

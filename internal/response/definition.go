@@ -16,7 +16,7 @@ type Base struct {
 	// The API version
 	//
 	// required: true
-	// example: 0.0.1
+	// example: 0.0.2
 	APIVersion string `json:"apiVersion"`
 	// The request ID
 	//

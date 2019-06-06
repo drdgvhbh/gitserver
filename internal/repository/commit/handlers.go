@@ -9,6 +9,7 @@ import (
 	"github.com/drdgvhbh/gitserver/internal/git"
 	"github.com/drdgvhbh/gitserver/internal/response"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 // List of commits in the repository
@@ -90,6 +91,24 @@ func NewGetCommitsHandler(reader git.Reader) func(http.ResponseWriter, *http.Req
 	}
 }
 
+// Gets the specified commit in the repository
+// swagger:response GetCommitOkResponse
+type GetCommitOKResponse struct {
+	// in: body
+	Body struct {
+		response.Base
+		// The request method
+		//
+		// required: true
+		// example: repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.5dd5708f4c284919b1ef22f44e5d98f7d7579910.get
+		Method string `json:"method,omitempty"`
+		// The response data
+		//
+		// required: true
+		Data []Commit `json:"data,omitempty"`
+	}
+}
+
 func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
@@ -128,5 +147,79 @@ func NewGetCommitHandler(reader git.Reader) func(http.ResponseWriter, *http.Requ
 
 			return nil
 		})()
+	}
+}
+
+// Gets the diff between the specified commit and its primary parent
+// swagger:response GetCommitChangesOKResponse
+type GetCommitChangesOKResponse struct {
+	// in: body
+	Body struct {
+		response.Base
+		// The request method
+		//
+		// required: true
+		// example: repositories.%7Chome%7Cdrd%7Cgo%7Csrc%7Cgithub.com%7Cdrdgvhbh%7Cgitserver.commits.5dd5708f4c284919b1ef22f44e5d98f7d7579910.changes.get
+		Method string `json:"method,omitempty"`
+		// The response data
+		//
+		// required: true
+		Data []Change `json:"data,omitempty"`
+	}
+}
+
+func NewGetCommitChangeHandler(reader git.Reader) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		vars := mux.Vars(req)
+		repositoryPath := vars["directory"]
+		commitHash := vars["hash"]
+		repository, _ := reader.Open(repositoryPath)
+
+		var err error
+		defer (func() {
+			writeError(err, w)
+		})()
+
+		err = (func() error {
+			changes, err := repository.Diff(git.NewHash(commitHash))
+			if err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				return errors.Wrapf(err, "commit '%s' not found", commitHash)
+			}
+
+			var changeData []*Change
+
+			for _, change := range changes {
+				changeType, err := change.Action()
+				if err != nil {
+					return errors.Wrapf(err, "change has no type")
+				}
+				changeTypeStr, err := changeType.String()
+				if err != nil {
+					return errors.Wrapf(err, "change cannot be converted to string")
+				}
+
+				var path string
+				switch changeType {
+				case git.Insert:
+					path = change.FilePathAfter()
+				case git.Modify:
+					path = change.FilePathAfter()
+				case git.Delete:
+					path = change.FilePathBefore()
+				}
+
+				changeData = append(changeData, NewChange(changeTypeStr, path))
+			}
+
+			data := make([]interface{}, len(changeData))
+			for i := range changeData {
+				data[i] = changeData[i]
+			}
+			writeData(data, w)
+
+			return nil
+		})()
+
 	}
 }

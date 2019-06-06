@@ -1,6 +1,7 @@
 package git
 
 import (
+	"github.com/pkg/errors"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
@@ -27,6 +28,7 @@ type Repository interface {
 	Head() (Reference, error)
 	Log(options *LogOptions) (CommitIter, error)
 	FindCommit(hash Hash) (Commit, error)
+	Diff(hash Hash) (Changes, error)
 	Reference(name ReferenceName) (Reference, error)
 	References() (ReferenceIter, error)
 	ReferenceMap() (map[string]References, error)
@@ -108,10 +110,46 @@ func (r *GitRepository) FindCommit(hash Hash) (Commit, error) {
 		return nil, err
 	}
 
-	c, err := log.Next()
+	commit, err := log.Next()
 	if err != nil {
 		return nil, err
 	}
 
-	return c, nil
+	return commit, nil
+}
+
+func (r *GitRepository) Diff(hash Hash) (Changes, error) {
+	log, err := r.Log(&LogOptions{
+		From: hash,
+	})
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot log commits from hash %s", hash)
+	}
+
+	commit, err := log.Next()
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot get commit %s", hash)
+	}
+	parent, err := log.Next()
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot get commit %s's parent", hash)
+	}
+
+	commitTree, err := commit.Tree()
+	if err != nil {
+		return nil, errors.Wrapf(err, "commit %s has no tree", commit.Hash())
+	}
+	parentTree, err := parent.Tree()
+	if err != nil {
+		return nil, errors.Wrapf(err, "commit %s has no tree", parent.Hash())
+	}
+
+	changes, err := parentTree.Diff(commitTree)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot diff commit %s with parent commit %s",
+			commit.Hash(),
+			parent.Hash())
+	}
+
+	return changes, nil
 }

@@ -5,7 +5,7 @@
 //     Schemes: http, https
 //     Host: localhost
 //     BasePath: /v1
-//     Version: 0.0.1
+//     Version: 0.0.2
 //     License: MIT http://opensource.org/licenses/MIT
 //     Contact: Ryan Lee<ryanleecode@gmail.com> http://drdgvhbh.io
 //

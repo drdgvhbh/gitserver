@@ -22,7 +22,7 @@ var _ = repository.Params{}
 
 var (
 	responseProperties = &response.Properties{
-		APIVersion: "0.0.1",
+		APIVersion: "0.0.2",
 	}
 )
 
@@ -76,8 +76,52 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 		HandleFunc("/commits", commit.NewGetCommitsHandler(fileSystem)).
 		Methods("GET")
 
-	repositoriesRouter.
-		HandleFunc("/commits/{hash}", commit.NewGetCommitHandler(fileSystem)).
+	commitRouter := repositoriesRouter.
+		PathPrefix("/commits/{hash}").
+		Subrouter()
+
+	// swagger:route GET /repositories/{directory}/commit/{hash} getCommit
+	//
+	// Get commit
+	//
+	// This will get the specified commit in the specified repository.
+	//
+	//     	Consumes:
+	//     	- application/json
+	//
+	//			Produces:
+	//			- application/json
+	//
+	//			Schemes: http
+	//
+	//			Security:
+	//				api_key:
+	//			Responses:
+	//       	200: GetCommitOkResponse
+	commitRouter.
+		HandleFunc("", commit.NewGetCommitHandler(fileSystem)).
+		Methods("GET")
+
+	// swagger:route GET /repositories/{directory}/commit/{hash}/changes getCommitChanges
+	//
+	// Get commit changes
+	//
+	// This will get the changes of the specified commit in the specified repository.
+	//
+	//     	Consumes:
+	//     	- application/json
+	//
+	//			Produces:
+	//			- application/json
+	//
+	//			Schemes: http
+	//
+	//			Security:
+	//				api_key:
+	//			Responses:
+	//       	200: GetCommitChangesOKResponse
+	commitRouter.
+		HandleFunc("/changes", commit.NewGetCommitChangeHandler(fileSystem)).
 		Methods("GET")
 
 	// swagger:route GET /repositories/{directory}/references listReferences
