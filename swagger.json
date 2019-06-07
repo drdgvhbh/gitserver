@@ -27,7 +27,43 @@
   "host": "localhost",
   "basePath": "/v1",
   "paths": {
-    "/repositories/{directory}/commit/{hash}": {
+    "/repositories/{directory}/commits": {
+      "get": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "This will list the commit in the specified repository.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "summary": "List commits",
+        "operationId": "listCommits",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Directory",
+            "description": "The directory of the repository",
+            "name": "directory",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetCommitsOkResponse"
+          }
+        }
+      }
+    },
+    "/repositories/{directory}/commits/{hash}": {
       "get": {
         "security": [
           {
@@ -71,7 +107,7 @@
         }
       }
     },
-    "/repositories/{directory}/commit/{hash}/changes": {
+    "/repositories/{directory}/commits/{hash}/changes": {
       "get": {
         "security": [
           {
@@ -111,42 +147,6 @@
         "responses": {
           "200": {
             "$ref": "#/responses/GetCommitChangesOKResponse"
-          }
-        }
-      }
-    },
-    "/repositories/{directory}/commits": {
-      "get": {
-        "security": [
-          {
-            "api_key": []
-          }
-        ],
-        "description": "This will list the commit in the specified repository.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http"
-        ],
-        "summary": "List commits",
-        "operationId": "listCommits",
-        "parameters": [
-          {
-            "type": "string",
-            "x-go-name": "Directory",
-            "description": "The directory of the repository",
-            "name": "directory",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/GetCommitsOkResponse"
           }
         }
       }

@@ -80,7 +80,7 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 		PathPrefix("/commits/{hash}").
 		Subrouter()
 
-	// swagger:route GET /repositories/{directory}/commit/{hash} getCommit
+	// swagger:route GET /repositories/{directory}/commits/{hash} getCommit
 	//
 	// Get commit
 	//
@@ -102,7 +102,7 @@ func NewRootHandler(worktree billy.Filesystem) http.Handler {
 		HandleFunc("", commit.NewGetCommitHandler(fileSystem)).
 		Methods("GET")
 
-	// swagger:route GET /repositories/{directory}/commit/{hash}/changes getCommitChanges
+	// swagger:route GET /repositories/{directory}/commits/{hash}/changes getCommitChanges
 	//
 	// Get commit changes
 	//
